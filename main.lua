@@ -15,14 +15,13 @@ function love.load()
 
     -- Bullet code
     require('bullet')
-
-    populateStage(20)
 end
 
 function love.update(dt)
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
             gameState = RUNNING
+            populateStage(20)
         end
     elseif gameState == RUNNING then 
         -- Update Player
@@ -32,12 +31,21 @@ function love.update(dt)
         updateBullets(dt)
 
         -- Update Things and detect collisions
-        for k,t in pairs(things) do 
+        for i,t in pairs(things) do 
             if t.type == "hazard" then 
+                -- Hazard/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Go back to menu and reset player position
                     gameState = MENU
+                    clearThings()
                     player.x, player.y = love.graphics.getWidth() / 2, love.graphics.getHeight() / 2
+                end
+                -- Hazard/Bullet Collisions
+                for j,b in pairs(bullets) do 
+                    if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
+                        table.remove(bullets, j)
+                        table.remove(things, i)
+                    end
                 end
             end
         end
@@ -95,3 +103,9 @@ function distanceBetween(x1, y1, x2, y2)
     return math.sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
 end
 
+-- Function to empty the Things table
+function clearThings()
+    for i=#things, 1, -1 do 
+        table.remove(things, i)
+    end
+end
