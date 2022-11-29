@@ -9,7 +9,7 @@ function love.load()
     -- Game State
     MENU = 1
     RUNNING = 2
-    gameState = 2
+    gameState = MENU
 
     things = {}
 
@@ -17,21 +17,44 @@ function love.load()
 end
 
 function love.update(dt)
-    player:update(dt)
+    if gameState == MENU then 
+        if love.keyboard.isDown("space") then
+            gameState = RUNNING
+        end
+    elseif gameState == RUNNING then 
+        -- Update Player
+        player:update(dt)
+
+        -- Update Things and detect collisions
+        for k,t in pairs(things) do 
+            if t.type == "hazard" then 
+                if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
+                    -- Go back to menu and reset player position
+                    gameState = MENU
+                    player.x, player.y = love.graphics.getWidth() / 2, love.graphics.getHeight() / 2
+                end
+            end
+        end
+    end
 end
 
 function love.draw()
-    -- Debug info
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.print(player.x .. " " .. player.y)
+    if gameState == MENU then
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf("Press Space to Begin!", 0, 50, love.graphics.getWidth(), "center")
+    elseif gameState == RUNNING then
+        -- Debug info
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.print(player.x .. " " .. player.y)
 
-    -- Draw player
-    player:draw()
+        -- Draw player
+        player:draw()
 
-    -- Draw Things
-    for k,t in ipairs(things) do 
-        love.graphics.setColor(t.color[1], t.color[2], t.color[3])
-        love.graphics.circle("fill", t.x, t.y, t.radius)
+        -- Draw Things
+        for k,t in pairs(things) do 
+            love.graphics.setColor(t.color[1], t.color[2], t.color[3])
+            love.graphics.circle("fill", t.x, t.y, t.radius)
+        end
     end
 end
 
@@ -45,12 +68,20 @@ function populateStage(num_hazards)
             temp_x = love.math.random(0, love.graphics.getWidth())
             temp_y = love.math.random(0, love.graphics.getHeight())
         end
+        -- Build the hazard object
         local hazard = {
+            type = "hazard",
             color = {1, 0, 0},
             x = temp_x,
             y = temp_y,
             radius = love.math.random(10, 20) 
         }
+        -- Insert it into the Things table
         table.insert(things, hazard)
     end
+end
+
+-- Calculates distance between two points
+function distanceBetween(x1, y1, x2, y2)
+    return math.sqrt( (x2 - x1)^2 + (y2 - y1)^2 )
 end
