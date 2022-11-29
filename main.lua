@@ -21,7 +21,7 @@ function love.update(dt)
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
             gameState = RUNNING
-            populateStage(20)
+            populateStage(20, 10)
         end
     elseif gameState == RUNNING then 
         -- Update Player
@@ -75,17 +75,10 @@ function love.draw()
     end
 end
 
-function populateStage(num_hazards)
+function populateStage(num_hazards, num_grunts)
     -- Create hazards
     for i = num_hazards, 1, -1 do
-        local temp_x = player.x
-        local temp_y = player.y
-        -- Precalculate these and make sure they're not on top of the player 
-        while math.abs(temp_x - player.x) < (player.radius * 4) and math.abs(temp_y - player.y) < (player.radius * 4) do
-            temp_x = love.math.random(0, love.graphics.getWidth())
-            temp_y = love.math.random(0, love.graphics.getHeight())
-        end
-        -- Build the hazard object
+        local temp_x, temp_y = getPointsAwayFromPlayer()
         local hazard = {
             type = "hazard",
             color = {1, 0, 0},
@@ -95,6 +88,18 @@ function populateStage(num_hazards)
         }
         -- Insert it into the Things table
         table.insert(things, hazard)
+    end
+    -- Create Grunts
+    for i = num_grunts, 1, -1 do 
+        local temp_x, temp_y = getPointsAwayFromPlayer()
+        local grunt = {
+            type = "grunt",
+            color = {1, 0.5, 0},
+            x = temp_x,
+            y = temp_y,
+            radius = 10
+        }
+        table.insert(things, grunt)
     end
 end
 
@@ -108,4 +113,16 @@ function clearThings()
     for i=#things, 1, -1 do 
         table.remove(things, i)
     end
+end
+
+-- Gets points away from the player, for use when spawning objects
+function getPointsAwayFromPlayer()
+    local temp_x = player.x
+    local temp_y = player.y
+    -- Precalculate these and make sure they're not on top of the player 
+    while math.abs(temp_x - player.x) < (player.radius * 4) and math.abs(temp_y - player.y) < (player.radius * 4) do
+        temp_x = love.math.random(0, love.graphics.getWidth())
+        temp_y = love.math.random(0, love.graphics.getHeight())
+    end
+    return temp_x, temp_y
 end
