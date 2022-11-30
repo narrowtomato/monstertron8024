@@ -21,7 +21,7 @@ function love.update(dt)
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
             gameState = RUNNING
-            populateStage(20, 10)
+            populateStage(30, 20)
         end
     elseif gameState == RUNNING then 
         -- Update Player
@@ -46,6 +46,13 @@ function love.update(dt)
                         table.remove(things, i)
                     end
                 end
+            end
+            if t.type == "grunt" then 
+                -- Move Grunts towards Player
+                t.x = t.x + (math.cos( thingPlayerAngle(t) ) * t.speed * dt)
+                t.y = t.y + (math.sin( thingPlayerAngle(t) ) * t.speed * dt)
+                -- Increase Grunt speed as time goes on 
+                t.speed = t.speed + dt
             end
         end
     end
@@ -96,7 +103,8 @@ function populateStage(num_hazards, num_grunts)
             color = {1, 0.5, 0},
             x = temp_x,
             y = temp_y,
-            radius = 10
+            radius = 10,
+            speed = love.math.random(10, 30)
         }
         table.insert(things, grunt)
     end

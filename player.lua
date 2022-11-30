@@ -29,3 +29,7 @@ function playerDeath()
     clearThings()
     player.x, player.y = love.graphics.getWidth() / 2, love.graphics.getHeight() / 2
 end
+
+function thingPlayerAngle(thing)
+    return math.atan2( player.y - thing.y, player.x - thing.x )
+end
