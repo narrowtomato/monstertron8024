@@ -22,3 +22,10 @@ function player:draw()
     love.graphics.setColor(1, 1, 0)
     love.graphics.circle("fill", self.x, self.y, self.radius)
 end
+
+function playerDeath()
+    -- Go back to menu and reset player position
+    gameState = MENU
+    clearThings()
+    player.x, player.y = love.graphics.getWidth() / 2, love.graphics.getHeight() / 2
+end

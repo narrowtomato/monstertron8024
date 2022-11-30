@@ -32,15 +32,14 @@ function love.update(dt)
 
         -- Update Things and detect collisions
         for i,t in pairs(things) do 
-            if t.type == "hazard" then 
-                -- Hazard/Player Collisions
+            if t.type == "hazard" or t.type == "grunt" then 
+                -- Danger/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
-                    -- Go back to menu and reset player position
-                    gameState = MENU
-                    clearThings()
-                    player.x, player.y = love.graphics.getWidth() / 2, love.graphics.getHeight() / 2
+                    playerDeath()
                 end
-                -- Hazard/Bullet Collisions
+            end
+            if t.type == "hazard" or t.type == "grunt" then 
+                -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
                         table.remove(bullets, j)
@@ -126,3 +125,4 @@ function getPointsAwayFromPlayer()
     end
     return temp_x, temp_y
 end
+
