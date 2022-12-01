@@ -28,6 +28,7 @@ function playerDeath()
     gameState = MENU
     clearThings()
     player.x, player.y = love.graphics.getWidth() / 2, love.graphics.getHeight() / 2
+    score = 0
 end
 
 function thingPlayerAngle(thing)

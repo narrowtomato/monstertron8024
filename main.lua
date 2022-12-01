@@ -13,6 +13,9 @@ function love.load()
     -- All things on the stage other than player and bullets
     things = {}
 
+    -- Score 
+    score = 0
+
     -- Bullet code
     require('bullet')
 end
@@ -42,8 +45,11 @@ function love.update(dt)
                 -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
+                        -- Destroy the thing and the bullet
                         table.remove(bullets, j)
                         table.remove(things, i)
+                        -- Increase score
+                        score = score + t.score
                     end
                 end
             end
@@ -63,9 +69,9 @@ function love.draw()
         love.graphics.setColor(1, 1, 1)
         love.graphics.printf("Press Space to Begin!", 0, 50, love.graphics.getWidth(), "center")
     elseif gameState == RUNNING then
-        -- Debug info
+        -- Score
         love.graphics.setColor(1, 1, 1)
-        love.graphics.print(player.x .. " " .. player.y)
+        love.graphics.print(score)
 
         -- Draw player
         player:draw()
@@ -87,6 +93,7 @@ function populateStage(num_hazards, num_grunts)
         local temp_x, temp_y = getPointsAwayFromPlayer()
         local hazard = {
             type = "hazard",
+            score = 0,
             color = {1, 0, 0},
             x = temp_x,
             y = temp_y,
@@ -100,6 +107,7 @@ function populateStage(num_hazards, num_grunts)
         local temp_x, temp_y = getPointsAwayFromPlayer()
         local grunt = {
             type = "grunt",
+            score = 100,
             color = {1, 0.5, 0},
             x = temp_x,
             y = temp_y,
