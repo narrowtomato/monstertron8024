@@ -1,4 +1,9 @@
-player = {speed=200, x=love.graphics.getWidth() / 2, y=love.graphics.getHeight() / 2, radius=10}
+player = {
+    speed=200, 
+    x=love.graphics.getWidth() / 2, 
+    y=love.graphics.getHeight() / 2, 
+    radius=10
+}
 
 function player:update(dt)
     if gameState == 2 then

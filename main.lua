@@ -24,7 +24,7 @@ function love.update(dt)
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
             gameState = RUNNING
-            populateStage(30, 20)
+            populateStage(20, 30)
         end
     elseif gameState == RUNNING then 
         -- Update Player
@@ -35,30 +35,50 @@ function love.update(dt)
 
         -- Update Things and detect collisions
         for i,t in pairs(things) do 
-            if t.type == "hazard" or t.type == "grunt" then 
-                -- Danger/Player Collisions
-                if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
-                    playerDeath()
-                end
-            end
-            if t.type == "hazard" or t.type == "grunt" then 
-                -- Killables/Bullet Collisions
-                for j,b in pairs(bullets) do 
-                    if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
-                        -- Destroy the thing and the bullet
-                        table.remove(bullets, j)
-                        table.remove(things, i)
-                        -- Increase score
-                        score = score + t.score
-                    end
-                end
-            end
+            -- Update Grunts
             if t.type == "grunt" then 
                 -- Move Grunts towards Player
                 t.x = t.x + (math.cos( thingPlayerAngle(t) ) * t.speed * dt)
                 t.y = t.y + (math.sin( thingPlayerAngle(t) ) * t.speed * dt)
                 -- Increase Grunt speed as time goes on 
                 t.speed = t.speed + dt
+            end
+            -- Thing/Thing collisions
+            for j,ot in pairs(things) do
+                -- Hazard/Grunt collisions
+                if t.type == "hazard" and ot.type == "grunt" and distanceBetween(t.x, t.y, ot.x, ot.y) <= t.radius + ot.radius then
+                    t.dead = true 
+                    ot.dead = true
+                    print("BAM")
+                end
+            end
+            -- Thing/Player Collisions
+            if t.type == "hazard" or t.type == "grunt" then 
+                -- Danger/Player Collisions
+                if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
+                    playerDeath()
+                end
+            end
+            -- Thing/Bullet Collisions
+            if t.type == "hazard" or t.type == "grunt" then 
+                -- Killables/Bullet Collisions
+                for j,b in pairs(bullets) do 
+                    if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
+                        -- Set the bullet and thing to dead
+                        b.dead = true
+                        t.dead = true
+                        -- Increase score
+                        score = score + t.score
+                    end
+                end
+            end
+        end
+
+        -- Remove dead things
+        for i=#things, 1, -1 do 
+            local t = things[i]
+            if t.dead then 
+                table.remove(things, i)
             end
         end
     end
@@ -97,7 +117,8 @@ function populateStage(num_hazards, num_grunts)
             color = {1, 0, 0},
             x = temp_x,
             y = temp_y,
-            radius = love.math.random(10, 20) 
+            radius = 10,
+            dead = false
         }
         -- Insert it into the Things table
         table.insert(things, hazard)
@@ -112,7 +133,8 @@ function populateStage(num_hazards, num_grunts)
             x = temp_x,
             y = temp_y,
             radius = 10,
-            speed = love.math.random(10, 30)
+            speed = love.math.random(10, 30),
+            dead = false
         }
         table.insert(things, grunt)
     end
