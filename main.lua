@@ -18,6 +18,9 @@ function love.load()
 
     -- Bullet code
     require('bullet')
+
+    -- Explosion code
+    require('splodey')
 end
 
 function love.update(dt)
@@ -32,6 +35,9 @@ function love.update(dt)
 
         -- Update Bullets
         updateBullets(dt)
+
+        -- Update Explosions
+        updateSplodies(dt)
 
         -- Update Things and detect collisions
         for i,t in pairs(things) do 
@@ -69,6 +75,8 @@ function love.update(dt)
                         t.dead = true
                         -- Increase score
                         score = score + t.score
+                        -- Spawn explosion
+                        spawnSplodey(t.x, t.y)
                     end
                 end
             end
@@ -98,6 +106,9 @@ function love.draw()
 
         -- Draw bullets
         drawBullets()
+
+        -- Draw explosions
+        drawSplodies()
 
         -- Draw Things
         for k,t in pairs(things) do 

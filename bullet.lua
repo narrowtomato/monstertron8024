@@ -1,7 +1,6 @@
 bullets = {}
 bullet_timer = 0
 bullet_timer_max = 0.3
-love.graphics.setPointSize(3)        
 
 function updateBullets(dt)
     -- Player Shooting 
@@ -35,6 +34,7 @@ end
 function drawBullets()
     for k,b in pairs(bullets) do 
         love.graphics.setColor(1, 1, 0)
+        love.graphics.setPointSize(3) 
         love.graphics.points(b.x, b.y)
     end
 end
