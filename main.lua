@@ -55,7 +55,8 @@ function love.update(dt)
                 if t.type == "hazard" and ot.type == "grunt" and distanceBetween(t.x, t.y, ot.x, ot.y) <= t.radius + ot.radius then
                     t.dead = true 
                     ot.dead = true
-                    print("BAM")
+                    -- Spawn explosion
+                    spawnSplodey(t.x, t.y)
                 end
             end
             -- Thing/Player Collisions
