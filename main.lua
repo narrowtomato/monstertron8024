@@ -21,13 +21,15 @@ function love.load()
 
     -- Explosion code
     require('splodey')
+
+    human_max_change_dir_timer = 2
 end
 
 function love.update(dt)
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
             gameState = RUNNING
-            populateStage(20, 30)
+            populateStage(20, 30, 3)
         end
     elseif gameState == RUNNING then 
         -- Update Player
@@ -48,6 +50,32 @@ function love.update(dt)
                 t.y = t.y + (math.sin( thingPlayerAngle(t) ) * t.speed * dt)
                 -- Increase Grunt speed as time goes on 
                 t.speed = t.speed + dt
+            end
+            -- Update Humans
+            if t.type == "human" then 
+                -- Make sure they don't go offscreen
+                if t.x <= 5 then
+                    t.direction = 0
+                    t.change_dir_timer = human_max_change_dir_timer
+                elseif t.x >= love.graphics.getWidth() - 5 then 
+                    t.direction = math.pi
+                    t.change_dir_timer = human_max_change_dir_timer
+                elseif t.y < 5 then 
+                    t.direction = math.pi / 2
+                    t.change_dir_timer = human_max_change_dir_timer
+                elseif t.y >= love.graphics.getHeight() - 5 then 
+                    t.direction = 3 * math.pi / 2
+                    t.change_dir_timer = human_max_change_dir_timer
+                end
+                -- Human Movement
+                if t.change_dir_timer < 0 then 
+                    t.direction = getRandomCardinalDirection()
+                    t.change_dir_timer = human_max_change_dir_timer
+                end
+                t.change_dir_timer = t.change_dir_timer - dt
+                t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
+                t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
+                -- Human/Player Collisions
             end
             -- Thing/Thing collisions
             for j,ot in pairs(things) do
@@ -119,7 +147,7 @@ function love.draw()
     end
 end
 
-function populateStage(num_hazards, num_grunts)
+function populateStage(num_hazards, num_grunts, num_humans)
     -- Create hazards
     for i = num_hazards, 1, -1 do
         local temp_x, temp_y = getPointsAwayFromPlayer()
@@ -150,6 +178,21 @@ function populateStage(num_hazards, num_grunts)
         }
         table.insert(things, grunt)
     end
+    -- Create Humans
+    for i = num_humans, 1, -1 do 
+        local human = {
+            type = "human",
+            color = {0, 0, 1},
+            x = love.math.random(0, love.graphics.getWidth()),
+            y = love.math.random(0, love.graphics.getHeight()),
+            radius = 10,
+            speed = 30,
+            dead = false,
+            direction = getRandomCardinalDirection(),
+            change_dir_timer = human_max_change_dir_timer
+        }
+        table.insert(things, human)
+    end
 end
 
 -- Calculates distance between two points
@@ -176,3 +219,16 @@ function getPointsAwayFromPlayer()
     return temp_x, temp_y
 end
 
+-- Returns random cardinal direction
+function getRandomCardinalDirection()
+    local r = love.math.random(1, 4)
+    if r == 1 then 
+        return 0
+    elseif r == 2 then 
+        return math.pi / 2
+    elseif r == 3 then 
+        return math.pi 
+    else
+        return 3 * math.pi / 2
+    end
+end

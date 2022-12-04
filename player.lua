@@ -8,16 +8,16 @@ player = {
 function player:update(dt)
     if gameState == 2 then
         -- Player Movement
-        if love.keyboard.isDown("d") and self.x < love.graphics.getWidth() then
+        if love.keyboard.isDown("d") and self.x < love.graphics.getWidth() - 5 then
             self.x = self.x + self.speed * dt
         end
-        if love.keyboard.isDown("a") and self.x > 0 then
+        if love.keyboard.isDown("a") and self.x > 5 then
             self.x = self.x - self.speed * dt
         end
-        if love.keyboard.isDown("w") and self.y > 0 then
+        if love.keyboard.isDown("w") and self.y > 5 then
             self.y = self.y - self.speed * dt
         end
-        if love.keyboard.isDown("s") and self.y < love.graphics.getHeight() then
+        if love.keyboard.isDown("s") and self.y < love.graphics.getHeight() - 5 then
             self.y = self.y + self.speed * dt
         end
     end
