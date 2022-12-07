@@ -86,6 +86,13 @@ function love.update(dt)
                     -- Spawn explosion
                     spawnSplodey(t.x, t.y)
                 end
+                -- Enemy/Human collisions
+                if t.type == "grunt" and ot.type == "human" and distanceBetween(t.x, t.y, ot.x, ot.y) <= t.radius + ot.radius then
+                    -- Kill the human
+                    ot.dead = true
+                    -- Spawn explosion
+                    spawnSplodey(ot.x, ot.y)
+                end
             end
             -- Thing/Player Collisions
             if t.type == "hazard" or t.type == "grunt" then 
