@@ -13,22 +13,20 @@ function love.load()
     -- All things on the stage other than player and bullets
     things = {}
 
-    -- Score 
-    score = 0
-
     -- Bullet code
     require('bullet')
 
     -- Explosion code
     require('splodey')
 
-    human_max_change_dir_timer = 2
+    max_change_dir_timer = 2
 end
 
 function love.update(dt)
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
             gameState = RUNNING
+            player.score = 0
             populateStage(20, 30, 3)
         end
     elseif gameState == RUNNING then 
@@ -56,26 +54,53 @@ function love.update(dt)
                 -- Make sure they don't go offscreen
                 if t.x <= 5 then
                     t.direction = 0
-                    t.change_dir_timer = human_max_change_dir_timer
+                    t.change_dir_timer = max_change_dir_timer
                 elseif t.x >= love.graphics.getWidth() - 5 then 
                     t.direction = math.pi
-                    t.change_dir_timer = human_max_change_dir_timer
+                    t.change_dir_timer = max_change_dir_timer
                 elseif t.y < 5 then 
                     t.direction = math.pi / 2
-                    t.change_dir_timer = human_max_change_dir_timer
+                    t.change_dir_timer = max_change_dir_timer
                 elseif t.y >= love.graphics.getHeight() - 5 then 
                     t.direction = 3 * math.pi / 2
-                    t.change_dir_timer = human_max_change_dir_timer
+                    t.change_dir_timer = max_change_dir_timer
                 end
                 -- Human Movement
                 if t.change_dir_timer < 0 then 
                     t.direction = getRandomCardinalDirection()
-                    t.change_dir_timer = human_max_change_dir_timer
+                    t.change_dir_timer = max_change_dir_timer
                 end
                 t.change_dir_timer = t.change_dir_timer - dt
                 t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
                 t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
                 -- Human/Player Collisions
+                if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
+                    -- Increment number of humans rescued
+                    player.humans_rescued_this_wave = player.humans_rescued_this_wave + 1
+                    -- Increase score based on how many rescued
+                    player.score = player.score + 1000 * player.humans_rescued_this_wave
+                    -- Remove human (without explosion)
+                    t.dead = true
+                    -- Create score blip at location
+                    local score_blip = {
+                        x = t.x - t.radius,
+                        y = t.y,
+                        type = "score_blip",
+                        timer = 2,
+                        dead = false,
+                        color = {1, 1, 1},
+                        text = tostring(1000 * player.humans_rescued_this_wave)
+                    }
+                    table.insert(things, score_blip)
+                end
+            end
+            -- Update Score Blips
+            if t.type == "score_blip" then 
+                t.timer = t.timer - dt 
+                if t.timer < 0 then 
+                    t.dead = true 
+                end
+                t.y = t.y - 0.5
             end
             -- Thing/Thing collisions
             for j,ot in pairs(things) do
@@ -110,7 +135,7 @@ function love.update(dt)
                         b.dead = true
                         t.dead = true
                         -- Increase score
-                        score = score + t.score
+                        player.score = player.score + t.score
                         -- Spawn explosion
                         spawnSplodey(t.x, t.y)
                     end
@@ -135,7 +160,7 @@ function love.draw()
     elseif gameState == RUNNING then
         -- Score
         love.graphics.setColor(1, 1, 1)
-        love.graphics.print(score)
+        love.graphics.print(player.score)
 
         -- Draw player
         player:draw()
@@ -148,8 +173,13 @@ function love.draw()
 
         -- Draw Things
         for k,t in pairs(things) do 
-            love.graphics.setColor(t.color[1], t.color[2], t.color[3])
-            love.graphics.circle("fill", t.x, t.y, t.radius)
+            if t.type == "score_blip" then 
+                love.graphics.setColor(t.color[1], t.color[2], t.color[3])
+                love.graphics.print(t.text, t.x, t.y)
+            else
+                love.graphics.setColor(t.color[1], t.color[2], t.color[3])
+                love.graphics.circle("fill", t.x, t.y, t.radius)
+            end
         end
     end
 end
@@ -196,10 +226,12 @@ function populateStage(num_hazards, num_grunts, num_humans)
             speed = 30,
             dead = false,
             direction = getRandomCardinalDirection(),
-            change_dir_timer = human_max_change_dir_timer
+            change_dir_timer = max_change_dir_timer
         }
         table.insert(things, human)
     end
+    -- Reset number of humans rescued
+    player.humans_rescued_this_wave = 0
 end
 
 -- Calculates distance between two points

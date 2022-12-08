@@ -2,7 +2,9 @@ player = {
     speed=200, 
     x=love.graphics.getWidth() / 2, 
     y=love.graphics.getHeight() / 2, 
-    radius=10
+    radius=10,
+    humans_rescued_this_wave = 0,
+    score = 0
 }
 
 function player:update(dt)
