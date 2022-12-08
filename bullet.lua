@@ -1,6 +1,7 @@
 bullets = {}
 bullet_timer = 0
-bullet_timer_max = 0.3
+bullet_timer_max = 0.15
+BULLET_SPEED = 500
 
 function updateBullets(dt)
     -- Player Shooting 
@@ -64,7 +65,7 @@ function spawnBullet()
     local bullet = {
         x = player.x,
         y = player.y,
-        speed = 500,
+        speed = BULLET_SPEED,
         direction = temp_dir,
         dead = false
     }

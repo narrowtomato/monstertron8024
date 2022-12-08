@@ -19,7 +19,12 @@ function love.load()
     -- Explosion code
     require('splodey')
 
+    -- Max timer for direction changes
     max_change_dir_timer = 2
+
+    -- Current Wave and total waves
+    current_wave = 0
+    total_waves = 3
 end
 
 function love.update(dt)
@@ -27,7 +32,7 @@ function love.update(dt)
         if love.keyboard.isDown("space") then
             gameState = RUNNING
             player.score = 0
-            populateStage(20, 30, 3)
+            nextWave()
         end
     elseif gameState == RUNNING then 
         -- Update Player
@@ -40,9 +45,11 @@ function love.update(dt)
         updateSplodies(dt)
 
         -- Update Things and detect collisions
+        local enemy_alive = false
         for i,t in pairs(things) do 
             -- Update Grunts
             if t.type == "grunt" then 
+                enemy_alive = true
                 -- Move Grunts towards Player
                 t.x = t.x + (math.cos( thingPlayerAngle(t) ) * t.speed * dt)
                 t.y = t.y + (math.sin( thingPlayerAngle(t) ) * t.speed * dt)
@@ -150,6 +157,11 @@ function love.update(dt)
                 table.remove(things, i)
             end
         end
+
+        -- Check if an enemy is alive and advance to the next level if not
+        if not enemy_alive then
+            nextWave()
+        end
     end
 end
 
@@ -185,6 +197,8 @@ function love.draw()
 end
 
 function populateStage(num_hazards, num_grunts, num_humans)
+    -- Clear the stage 
+    clearThings()
     -- Create hazards
     for i = num_hazards, 1, -1 do
         local temp_x, temp_y = getPointsAwayFromPlayer()
@@ -232,6 +246,17 @@ function populateStage(num_hazards, num_grunts, num_humans)
     end
     -- Reset number of humans rescued
     player.humans_rescued_this_wave = 0
+end
+
+function nextWave()
+    current_wave = current_wave + 1
+    if current_wave % total_waves == 0 then 
+        populateStage(0, 1, 10)
+    elseif current_wave % total_waves == 1 then
+        populateStage(20, 20, 3)
+    elseif current_wave % total_waves == 2 then 
+        populateStage(30, 30, 5)
+    end
 end
 
 -- Calculates distance between two points
