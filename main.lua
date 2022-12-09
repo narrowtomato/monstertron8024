@@ -85,6 +85,10 @@ function love.update(dt)
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Increment number of humans rescued
                     player.humans_rescued_this_wave = player.humans_rescued_this_wave + 1
+                    -- Cap this value at 5 (score additions max out at 5000)
+                    if player.humans_rescued_this_wave > 5 then 
+                        player.humans_rescued_this_wave = 5
+                    end
                     -- Increase score based on how many rescued
                     player.score = player.score + 1000 * player.humans_rescued_this_wave
                     -- Remove human (without explosion)
