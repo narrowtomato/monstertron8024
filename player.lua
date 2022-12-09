@@ -1,4 +1,5 @@
 player = {
+    color = {1, 1, 0},
     speed=200, 
     x=love.graphics.getWidth() / 2, 
     y=love.graphics.getHeight() / 2, 
@@ -28,7 +29,7 @@ function player:update(dt)
 end
 
 function player:draw()
-    love.graphics.setColor(1, 1, 0)
+    love.graphics.setColor(self.color[1], self.color[2], self.color[3])
     love.graphics.circle("fill", self.x, self.y, self.radius)
 end
 

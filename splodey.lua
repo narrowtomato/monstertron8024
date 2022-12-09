@@ -24,16 +24,16 @@ function updateSplodies(dt)
 end
 
 function drawSplodies()
+    love.graphics.setPointSize(2)
     for i,s in pairs(splodies) do
+        love.graphics.setColor({s.color[1], s.color[2], s.color[3]}, 1, 1)
         for j,p in pairs(s.particles) do
-            love.graphics.setColor(1, 1, 1)
-            love.graphics.setPointSize(2) 
             love.graphics.points(p.x, p.y)
         end
     end
 end
 
-function spawnSplodey(temp_x, temp_y, reverse)
+function spawnSplodey(object_color, temp_x, temp_y, reverse)
     -- If no reverse value was provided, default to false
     local reversed = reverse or false
     -- Table for initial
@@ -41,7 +41,8 @@ function spawnSplodey(temp_x, temp_y, reverse)
         x = temp_x,
         y = temp_y,
         particles = {},
-        lifespan = 0        -- The lifespan in frames
+        lifespan = 0,
+        color = {object_color[1], object_color[2], object_color[3]}        -- The lifespan in frames
     }
     -- Outward Explosions
     if not reversed then

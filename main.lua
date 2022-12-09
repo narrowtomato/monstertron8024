@@ -129,14 +129,15 @@ function love.update(dt)
                     t.dead = true 
                     ot.dead = true
                     -- Spawn explosion
-                    spawnSplodey(t.x, t.y)
+                    spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y)
+                    spawnSplodey({ot.color[1], ot.color[2], ot.color[3]}, ot.x, ot.y)
                 end
                 -- Enemy/Human collisions
                 if t.type == "grunt" and ot.type == "human" and distanceBetween(t.x, t.y, ot.x, ot.y) <= t.radius + ot.radius then
                     -- Kill the human
                     ot.dead = true
                     -- Spawn explosion
-                    spawnSplodey(ot.x, ot.y)
+                    spawnSplodey({ot.color[1], ot.color[2], ot.color[3]}, ot.x, ot.y)
                 end
             end
             -- Thing/Player Collisions
@@ -157,7 +158,7 @@ function love.update(dt)
                         -- Increase score
                         player.score = player.score + t.score
                         -- Spawn explosion
-                        spawnSplodey(t.x, t.y)
+                        spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y)
                     end
                 end
             end
@@ -187,7 +188,7 @@ function love.draw()
     
     -- Score and Wave Display
     love.graphics.setColor(1, 1, 1)
-    love.graphics.print(player.x .. " " .. player.y .. "SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
+    love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
     
     if gameState == MENU then
         love.graphics.setColor(1, 1, 1)
@@ -271,7 +272,7 @@ function populateStage(num_hazards, num_grunts, num_humans)
     gameState = SPAWNING
     -- Create all reverse explosions
     for k,t in pairs(things) do 
-        spawnSplodey(t.x, t.y, true)
+        spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y, true)
     end
 end
 
@@ -281,7 +282,7 @@ function nextWave()
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 2
     -- Create reverse explosion for the player
-    spawnSplodey(player.x, player.y, true)
+    spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y, true)
     -- Increment the wave
     current_wave = current_wave + 1
     -- Spawn different enemies per wave
