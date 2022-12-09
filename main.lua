@@ -8,6 +8,7 @@ function love.load()
     -- Game State
     MENU = 1
     RUNNING = 2
+    SPAWNING = 3
     gameState = MENU
 
     -- All things on the stage other than player and bullets
@@ -174,6 +175,11 @@ function love.update(dt)
         if not enemy_alive then
             nextWave()
         end
+    elseif gameState == SPAWNING then 
+        updateSplodies(dt)
+        if #splodies == 0 then 
+            gameState = RUNNING
+        end
     end
 end
 
@@ -181,7 +187,7 @@ function love.draw()
     
     -- Score and Wave Display
     love.graphics.setColor(1, 1, 1)
-    love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
+    love.graphics.print(player.x .. " " .. player.y .. "SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
     
     if gameState == MENU then
         love.graphics.setColor(1, 1, 1)
@@ -206,6 +212,8 @@ function love.draw()
                 love.graphics.circle("fill", t.x, t.y, t.radius)
             end
         end
+    elseif gameState == SPAWNING then 
+        drawSplodies()
     end
 end
 
@@ -259,6 +267,12 @@ function populateStage(num_hazards, num_grunts, num_humans)
     end
     -- Reset number of humans rescued
     player.humans_rescued_this_wave = 0
+    -- Move into spawning phase
+    gameState = SPAWNING
+    -- Create all reverse explosions
+    for k,t in pairs(things) do 
+        spawnSplodey(t.x, t.y, true)
+    end
 end
 
 -- Function to advance to the next wave
@@ -266,6 +280,8 @@ function nextWave()
     -- Center the player
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 2
+    -- Create reverse explosion for the player
+    spawnSplodey(player.x, player.y, true)
     -- Increment the wave
     current_wave = current_wave + 1
     -- Spawn different enemies per wave
