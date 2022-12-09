@@ -32,6 +32,7 @@ function love.update(dt)
         if love.keyboard.isDown("space") then
             gameState = RUNNING
             player.score = 0
+            player.lives = 3
             current_wave = 0
             nextWave()
         end
@@ -171,14 +172,15 @@ function love.update(dt)
 end
 
 function love.draw()
+    
+    -- Score and Wave Display
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
+    
     if gameState == MENU then
         love.graphics.setColor(1, 1, 1)
         love.graphics.printf("Press Space to Begin!", 0, 50, love.graphics.getWidth(), "center")
     elseif gameState == RUNNING then
-        -- Score and Wave
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave)
-
         -- Draw player
         player:draw()
 

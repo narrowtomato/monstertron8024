@@ -4,7 +4,8 @@ player = {
     y=love.graphics.getHeight() / 2, 
     radius=10,
     humans_rescued_this_wave = 0,
-    score = 0
+    score = 0,
+    lives = 3
 }
 
 function player:update(dt)
@@ -31,11 +32,14 @@ function player:draw()
 end
 
 function playerDeath()
-    -- Go back to menu and reset player position
-    gameState = MENU
+    -- Clear the Things table
     clearThings()
-    player.x, player.y = love.graphics.getWidth() / 2, love.graphics.getHeight() / 2
-    score = 0
+    -- Decrement Lives
+    player.lives = player.lives - 1
+    -- Go back to menu if all lives are lost
+    if player.lives == 0 then
+        gameState = MENU
+    end
 end
 
 function thingPlayerAngle(thing)
