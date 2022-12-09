@@ -253,8 +253,14 @@ function populateStage(num_hazards, num_grunts, num_humans)
     player.humans_rescued_this_wave = 0
 end
 
+-- Function to advance to the next wave
 function nextWave()
+    -- Center the player
+    player.x = love.graphics.getWidth() / 2
+    player.y = love.graphics.getHeight() / 2
+    -- Increment the wave
     current_wave = current_wave + 1
+    -- Spawn different enemies per wave
     if current_wave % total_waves == 0 then 
         populateStage(0, 1, 10)
     elseif current_wave % total_waves == 1 then
