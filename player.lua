@@ -4,6 +4,7 @@ player = {
     y=love.graphics.getHeight() / 2, 
     radius=10,
     humans_rescued_this_wave = 0,
+    total_humans_rescued = 0,
     score = 0,
     lives = 3
 }

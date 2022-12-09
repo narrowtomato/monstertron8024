@@ -33,6 +33,7 @@ function love.update(dt)
             gameState = RUNNING
             player.score = 0
             player.lives = 3
+            player.total_humans_rescued = 0
             current_wave = 0
             nextWave()
         end
@@ -86,6 +87,11 @@ function love.update(dt)
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Increment number of humans rescued
                     player.humans_rescued_this_wave = player.humans_rescued_this_wave + 1
+                    player.total_humans_rescued = player.total_humans_rescued + 1
+                    -- Award a life every 7 humans rescued
+                    if player.total_humans_rescued % 7 == 0 then 
+                        player.lives = player.lives + 1
+                    end
                     -- Cap this value at 5 (score additions max out at 5000)
                     if player.humans_rescued_this_wave > 5 then 
                         player.humans_rescued_this_wave = 5
