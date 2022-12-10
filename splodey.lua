@@ -1,23 +1,22 @@
 splodies = {}
+splodey_time = 0.5
 splodey_speed = 300
-explosion_radius = 10000
-max_lifespan = 60
 
 function updateSplodies(dt)
     for i,s in pairs(splodies) do
+        -- Update timer
+        s.timer = s.timer + dt
         -- Update particle positions
         for j,p in pairs(s.particles) do
-            p.x = p.x + math.cos(p.direction) * explosion_radius / max_lifespan * dt
-            p.y = p.y + math.sin(p.direction) * explosion_radius / max_lifespan * dt
+            p.x = p.x + math.cos(p.direction) * splodey_speed * dt
+            p.y = p.y + math.sin(p.direction) * splodey_speed * dt
         end
-        -- Increment lifespan every frame
-        s.lifespan = s.lifespan + 1
     end 
 
-    -- Remove explosions after lifespan has reached max
+    -- Remove explosions if timer is up
     for i=#splodies, 1, -1 do 
         local s = splodies[i]
-        if s.lifespan > max_lifespan then 
+        if s.timer > splodey_time then 
             table.remove(splodies, i)
         end
     end
@@ -41,8 +40,8 @@ function spawnSplodey(object_color, temp_x, temp_y, reverse)
         x = temp_x,
         y = temp_y,
         particles = {},
-        lifespan = 0,
-        color = {object_color[1], object_color[2], object_color[3]}        -- The lifespan in frames
+        timer = 0,
+        color = {object_color[1], object_color[2], object_color[3]}
     }
     -- Outward Explosions
     if not reversed then
@@ -59,8 +58,8 @@ function spawnSplodey(object_color, temp_x, temp_y, reverse)
         for i=10, 1, -1 do 
             local dir = love.math.random(0, 2 * math.pi)
             local particle = {
-                x = splodey.x + math.cos(dir) * max_lifespan,
-                y = splodey.y + math.sin(dir) * max_lifespan,
+                x = splodey.x + math.cos(dir) * 140,
+                y = splodey.y + math.sin(dir) * 140,
                 direction = dir + math.pi
             }
             table.insert(splodey.particles, particle)
