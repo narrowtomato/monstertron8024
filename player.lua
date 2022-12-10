@@ -7,7 +7,8 @@ player = {
     humans_rescued_this_wave = 0,
     total_humans_rescued = 0,
     score = 0,
-    lives = 3
+    lives = 3,
+    death_timer = 0
 }
 
 function player:update(dt)
@@ -41,6 +42,9 @@ function playerDeath()
     -- Go back to menu if all lives are lost
     if player.lives == 0 then
         gameState = MENU
+    else
+        gameState = RUNNING
+        nextWave(true)
     end
 end
 
