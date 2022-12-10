@@ -36,7 +36,7 @@ function love.update(dt)
             player.lives = 3
             player.total_humans_rescued = 0
             current_wave = 0
-            nextWave(dt)
+            nextWave()
         end
     elseif gameState == RUNNING then 
         -- Update Player
@@ -129,15 +129,15 @@ function love.update(dt)
                     t.dead = true 
                     ot.dead = true
                     -- Spawn explosion
-                    spawnSplodey(dt, {t.color[1], t.color[2], t.color[3]}, t.x, t.y)
-                    spawnSplodey(dt, {ot.color[1], ot.color[2], ot.color[3]}, ot.x, ot.y)
+                    spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y)
+                    spawnSplodey({ot.color[1], ot.color[2], ot.color[3]}, ot.x, ot.y)
                 end
                 -- Enemy/Human collisions
                 if t.type == "grunt" and ot.type == "human" and distanceBetween(t.x, t.y, ot.x, ot.y) <= t.radius + ot.radius then
                     -- Kill the human
                     ot.dead = true
                     -- Spawn explosion
-                    spawnSplodey(dt, {ot.color[1], ot.color[2], ot.color[3]}, ot.x, ot.y)
+                    spawnSplodey({ot.color[1], ot.color[2], ot.color[3]}, ot.x, ot.y)
                 end
             end
             -- Thing/Player Collisions
@@ -158,7 +158,7 @@ function love.update(dt)
                         -- Increase score
                         player.score = player.score + t.score
                         -- Spawn explosion
-                        spawnSplodey(dt, {t.color[1], t.color[2], t.color[3]}, t.x, t.y)
+                        spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y)
                     end
                 end
             end
@@ -218,7 +218,7 @@ function love.draw()
     end
 end
 
-function populateStage(dt, num_hazards, num_grunts, num_humans)
+function populateStage(num_hazards, num_grunts, num_humans)
     -- Clear the stage 
     clearThings()
     -- Create hazards
@@ -271,29 +271,27 @@ function populateStage(dt, num_hazards, num_grunts, num_humans)
     -- Move into spawning phase
     gameState = SPAWNING
     -- Create all reverse explosions
-    print("in")
     for k,t in pairs(things) do 
-        spawnSplodey(dt, {t.color[1], t.color[2], t.color[3]}, t.x, t.y, true)
+        spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y, true)
     end
 end
 
 -- Function to advance to the next wave
-function nextWave(dt)
+function nextWave()
     -- Center the player
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 2
     -- Create reverse explosion for the player
-    print("in")
-    spawnSplodey(dt, {player.color[1], player.color[2], player.color[3]}, player.x, player.y, true)
+    spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y, true)
     -- Increment the wave
     current_wave = current_wave + 1
     -- Spawn different enemies per wave
     if current_wave % total_waves == 0 then 
-        populateStage(dt, 0, 1, 10)
+        populateStage(0, 1, 10)
     elseif current_wave % total_waves == 1 then
-        populateStage(dt, 20, 20, 3)
+        populateStage(20, 20, 3)
     elseif current_wave % total_waves == 2 then 
-        populateStage(dt, 30, 30, 5)
+        populateStage(30, 30, 5)
     end
 end
 

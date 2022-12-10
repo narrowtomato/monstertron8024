@@ -1,4 +1,5 @@
 splodies = {}
+splodey_speed = 300
 explosion_radius = 10000
 max_lifespan = 60
 
@@ -32,7 +33,7 @@ function drawSplodies()
     end
 end
 
-function spawnSplodey(dt, object_color, temp_x, temp_y, reverse)
+function spawnSplodey(object_color, temp_x, temp_y, reverse)
     -- If no reverse value was provided, default to false
     local reversed = reverse or false
     -- Table for initial
@@ -45,7 +46,6 @@ function spawnSplodey(dt, object_color, temp_x, temp_y, reverse)
     }
     -- Outward Explosions
     if not reversed then
-
         for i=10, 1, -1 do 
             local particle = {
                 x = splodey.x,
@@ -55,7 +55,6 @@ function spawnSplodey(dt, object_color, temp_x, temp_y, reverse)
             table.insert(splodey.particles, particle)
         end
     else 
-        
         -- Inward Explosions
         for i=10, 1, -1 do 
             local dir = love.math.random(0, 2 * math.pi)
