@@ -213,12 +213,15 @@ function love.draw()
 
         -- Draw Things
         for k,t in pairs(things) do 
+            love.graphics.setColor(t.color[1], t.color[2], t.color[3])
             if t.type == "score_blip" then 
-                love.graphics.setColor(t.color[1], t.color[2], t.color[3])
                 love.graphics.print(t.text, t.x, t.y)
             else
-                love.graphics.setColor(t.color[1], t.color[2], t.color[3])
-                love.graphics.circle("fill", t.x, t.y, t.radius)
+                if t.type == "hulk" then
+                    love.graphics.rectangle("fill", t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2)
+                else
+                    love.graphics.circle("fill", t.x, t.y, t.radius)
+                end
             end
         end
     elseif gameState == SPAWNING then 
@@ -230,7 +233,7 @@ function love.draw()
     love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
 end
 
-function populateStage(num_hazards, num_grunts, num_humans)
+function populateStage(num_hazards, num_grunts, num_humans, num_hulks)
     -- Clear the stage 
     clearThings()
     -- Create hazards
@@ -278,6 +281,22 @@ function populateStage(num_hazards, num_grunts, num_humans)
         }
         table.insert(things, human)
     end
+    -- Create Hulks
+    n_hulks = num_hulks or 0
+    for i = n_hulks, 1, -1 do 
+        local temp_x, temp_y = getPointsAwayFromPlayer()
+        local hulk = {
+            type = "hulk",
+            color = {31/255, 255/255, 120/255},
+            x = temp_x,
+            y = temp_y,
+            radius = 15,
+            speed = 20,
+            direction = getRandomCardinalDirection(),
+            change_dir_timer = max_change_dir_timer
+        }
+        table.insert(things, hulk)
+    end
     -- Reset number of humans rescued
     player.humans_rescued_this_wave = 0
 end
@@ -304,9 +323,9 @@ function nextWave(restart)
         current_wave = current_wave + 1
         -- Spawn different enemies per wave
         if current_wave % total_waves == 0 then 
-            populateStage(0, 1, 10)
+            populateStage(0, 1, 10, 3)
         elseif current_wave % total_waves == 1 then
-            populateStage(20, 20, 3)
+            populateStage(20, 20, 3, 3)
         elseif current_wave % total_waves == 2 then 
             populateStage(30, 30, 5)
         end
