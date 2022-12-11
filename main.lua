@@ -148,7 +148,7 @@ function love.update(dt)
                     -- Enter Deathstate and set timer
                     gameState = DEATH
                     spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y)
-                    player.death_timer = 3
+                    player.death_timer = 2
                 end
             end
             -- Thing/Bullet Collisions
@@ -280,11 +280,14 @@ function populateStage(num_hazards, num_grunts, num_humans)
     end
     -- Reset number of humans rescued
     player.humans_rescued_this_wave = 0
-    -- Move into spawning phase
-    gameState = SPAWNING
-    -- Create all reverse explosions
+end
+
+-- Function to shuffle the stage on death
+function shuffleStage()
     for k,t in pairs(things) do 
-        spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y, true)
+        local temp_x, temp_y = getPointsAwayFromPlayer()
+        t.x = temp_x
+        t.y = temp_y
     end
 end
 
@@ -299,14 +302,19 @@ function nextWave(restart)
     -- Increment the wave if not restarting
     if not restart then 
         current_wave = current_wave + 1
+        -- Spawn different enemies per wave
+        if current_wave % total_waves == 0 then 
+            populateStage(0, 1, 10)
+        elseif current_wave % total_waves == 1 then
+            populateStage(20, 20, 3)
+        elseif current_wave % total_waves == 2 then 
+            populateStage(30, 30, 5)
+        end
     end
-    -- Spawn different enemies per wave
-    if current_wave % total_waves == 0 then 
-        populateStage(0, 1, 10)
-    elseif current_wave % total_waves == 1 then
-        populateStage(20, 20, 3)
-    elseif current_wave % total_waves == 2 then 
-        populateStage(30, 30, 5)
+    gameState = SPAWNING
+    -- Create all reverse explosions
+    for k,t in pairs(things) do 
+        spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y, true)
     end
 end
 

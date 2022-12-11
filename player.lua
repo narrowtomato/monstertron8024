@@ -35,15 +35,14 @@ function player:draw()
 end
 
 function playerDeath()
-    -- Clear the Things table
-    clearThings()
+    -- Shuffle the stage
+    shuffleStage()
     -- Decrement Lives
     player.lives = player.lives - 1
     -- Go back to menu if all lives are lost
     if player.lives == 0 then
         gameState = MENU
     else
-        gameState = RUNNING
         nextWave(true)
     end
 end
