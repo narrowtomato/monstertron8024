@@ -177,7 +177,8 @@ function love.update(dt)
         end
 
         -- Check if an enemy is alive and advance to the next level if not
-        if not enemy_alive then
+        -- Also that explosions have finished
+        if not enemy_alive and #splodies == 0 then
             nextWave()
         end
     elseif gameState == SPAWNING then 
