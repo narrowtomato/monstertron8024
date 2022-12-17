@@ -21,8 +21,9 @@ function love.load()
     -- Explosion code
     require('splodey')
 
-    -- Max timer for direction changes
-    max_change_dir_timer = 2
+    -- Max timers for direction changes
+    HUMAN_MAX_CHANGE_DIR_TIMER = 2
+    HULK_MAX_CHANGE_DIR_TIMER = 4
 
     -- Current Wave and total waves
     current_wave = 0
@@ -62,30 +63,8 @@ function love.update(dt)
                 t.speed = t.speed + dt
             end
             -- Update Humans and Hulks with wandering movement
-            if t.type == "human" or t.type == "hulk" then 
-                -- Make sure they don't go offscreen
-                if t.x <= 5 then
-                    t.direction = 0
-                    t.change_dir_timer = max_change_dir_timer
-                elseif t.x >= love.graphics.getWidth() - 5 then 
-                    t.direction = math.pi
-                    t.change_dir_timer = max_change_dir_timer
-                elseif t.y < 5 then 
-                    t.direction = math.pi / 2
-                    t.change_dir_timer = max_change_dir_timer
-                elseif t.y >= love.graphics.getHeight() - 5 then 
-                    t.direction = 3 * math.pi / 2
-                    t.change_dir_timer = max_change_dir_timer
-                end
-                -- Movement
-                if t.change_dir_timer < 0 then 
-                    t.direction = getRandomCardinalDirection()
-                    t.change_dir_timer = max_change_dir_timer
-                end
-                t.change_dir_timer = t.change_dir_timer - dt
-                t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
-                t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
-            end
+            if t.type == "human" then wanderingMovement(t, dt, HUMAN_MAX_CHANGE_DIR_TIMER) end
+            if t.type == "hulk" then wanderingMovement(t, dt, HULK_MAX_CHANGE_DIR_TIMER) end
             if t.type == "human" then
                 -- Human/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
@@ -290,7 +269,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks)
             speed = 30,
             dead = false,
             direction = getRandomCardinalDirection(),
-            change_dir_timer = max_change_dir_timer
+            change_dir_timer = HUMAN_MAX_CHANGE_DIR_TIMER
         }
         table.insert(things, human)
     end
@@ -306,7 +285,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks)
             radius = 15,
             speed = 20,
             direction = getRandomCardinalDirection(),
-            change_dir_timer = max_change_dir_timer
+            change_dir_timer = HULK_MAX_CHANGE_DIR_TIMER
         }
         table.insert(things, hulk)
     end
@@ -386,4 +365,29 @@ function getRandomCardinalDirection()
     else
         return 3 * math.pi / 2
     end
+end
+
+function wanderingMovement(wandering_thing, dt, max_change_dir_timer)
+    -- Make sure they don't go offscreen
+    if wandering_thing.x <= 5 then
+        wandering_thing.direction = 0
+        wandering_thing.change_dir_timer = max_change_dir_timer
+    elseif wandering_thing.x >= love.graphics.getWidth() - 5 then 
+        wandering_thing.direction = math.pi
+        wandering_thing.change_dir_timer = max_change_dir_timer
+    elseif wandering_thing.y < 5 then 
+        wandering_thing.direction = math.pi / 2
+        wandering_thing.change_dir_timer = max_change_dir_timer
+    elseif wandering_thing.y >= love.graphics.getHeight() - 5 then 
+        wandering_thing.direction = 3 * math.pi / 2
+        wandering_thing.change_dir_timer = max_change_dir_timer
+    end
+    -- Movement
+    if wandering_thing.change_dir_timer < 0 then 
+        wandering_thing.direction = getRandomCardinalDirection()
+        wandering_thing.change_dir_timer = max_change_dir_timer
+    end
+    wandering_thing.change_dir_timer = wandering_thing.change_dir_timer - dt
+    wandering_thing.x = wandering_thing.x + (math.cos( wandering_thing.direction ) * wandering_thing.speed * dt)
+    wandering_thing.y = wandering_thing.y + (math.sin( wandering_thing.direction ) * wandering_thing.speed * dt)
 end
