@@ -89,6 +89,11 @@ function love.update(dt)
                     t.change_dir_timer = SPHEROID_MAX_CHANGE_DIR_TIMER
                     t.speed = love.math.random(SPHEROID_MIN_SPEED, SPHEROID_MAX_SPEED)
                 end
+                -- Animation
+                t.ring1_radius = t.ring1_radius + 0.5
+                t.ring2_radius = t.ring2_radius + 0.5
+                if t.ring1_radius > 15 then t.ring1_radius = 0 end
+                if t.ring2_radius > 15 then t.ring2_radius = 0 end
             end
 
             -- Human/Player Collisions
@@ -237,6 +242,9 @@ function love.draw()
             else
                 if t.type == "hulk" then
                     love.graphics.rectangle("fill", t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2)
+                elseif t.type == "spheroid" then 
+                    love.graphics.circle("line", t.x, t.y, t.ring1_radius)
+                    love.graphics.circle("line", t.x, t.y, t.ring2_radius)
                 else
                     love.graphics.circle("fill", t.x, t.y, t.radius)
                 end
@@ -325,6 +333,8 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
             x = temp_x,
             y = temp_y,
             radius = 10,
+            ring1_radius = 5,
+            ring2_radius = 15,
             speed = love.math.random(SPHEROID_MIN_SPEED, SPHEROID_MAX_SPEED),
             direction = getRandomDirection(),
             change_dir_timer = love.math.random(0, SPHEROID_MAX_CHANGE_DIR_TIMER) 
