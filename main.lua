@@ -61,8 +61,8 @@ function love.update(dt)
                 -- Increase Grunt speed as time goes on 
                 t.speed = t.speed + dt
             end
-            -- Update Humans
-            if t.type == "human" then 
+            -- Update Humans and Hulks with wandering movement
+            if t.type == "human" or t.type == "hulk" then 
                 -- Make sure they don't go offscreen
                 if t.x <= 5 then
                     t.direction = 0
@@ -77,7 +77,7 @@ function love.update(dt)
                     t.direction = 3 * math.pi / 2
                     t.change_dir_timer = max_change_dir_timer
                 end
-                -- Human Movement
+                -- Movement
                 if t.change_dir_timer < 0 then 
                     t.direction = getRandomCardinalDirection()
                     t.change_dir_timer = max_change_dir_timer
@@ -85,6 +85,8 @@ function love.update(dt)
                 t.change_dir_timer = t.change_dir_timer - dt
                 t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
                 t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
+            end
+            if t.type == "human" then
                 -- Human/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Increment number of humans rescued
