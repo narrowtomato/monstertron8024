@@ -24,6 +24,11 @@ function love.load()
     -- Max timers for direction changes
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
     HULK_MAX_CHANGE_DIR_TIMER = 4
+    SPHEROID_MAX_CHANGE_DIR_TIMER = 6
+
+    -- Spheroid Speeds
+    SPHEROID_MIN_SPEED = 100
+    SPHEROID_MAX_SPEED = 140
 
     -- Current Wave and total waves
     current_wave = 0
@@ -62,11 +67,32 @@ function love.update(dt)
                 -- Increase Grunt speed as time goes on 
                 t.speed = t.speed + dt
             end
+
             -- Update Humans and Hulks with wandering movement
             if t.type == "human" then wanderingMovement(t, dt, HUMAN_MAX_CHANGE_DIR_TIMER) end
             if t.type == "hulk" then wanderingMovement(t, dt, HULK_MAX_CHANGE_DIR_TIMER) end
+
+            -- Spheroid Movement (slides against the edges)
+            if t.type == "spheroid" then 
+                -- Move
+                t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
+                t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
+                -- Slide against walls
+                if t.x < 0 + t.radius then t.x = t.radius end
+                if t.x > love.graphics.getWidth() - t.radius then t.x = love.graphics.getWidth() - t.radius end
+                if t.y < 0 + t.radius then t.y = t.radius end
+                if t.y > love.graphics.getHeight() - t.radius then t.y = love.graphics.getHeight() - t.radius end
+                -- Change direction when timer is out
+                t.change_dir_timer = t.change_dir_timer - dt
+                if t.change_dir_timer < 0 then
+                    t.direction = getRandomDirection()
+                    t.change_dir_timer = SPHEROID_MAX_CHANGE_DIR_TIMER
+                    t.speed = love.math.random(SPHEROID_MIN_SPEED, SPHEROID_MAX_SPEED)
+                end
+            end
+
+            -- Human/Player Collisions
             if t.type == "human" then
-                -- Human/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Increment number of humans rescued
                     player.humans_rescued_this_wave = player.humans_rescued_this_wave + 1
@@ -225,7 +251,7 @@ function love.draw()
     love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
 end
 
-function populateStage(num_hazards, num_grunts, num_humans, num_hulks)
+function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spheroids)
     -- Clear the stage 
     clearThings()
     -- Create hazards
@@ -289,6 +315,23 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks)
         }
         table.insert(things, hulk)
     end
+    -- Create Spheroids
+    n_spheroids = num_spheroids or 0
+    for i = n_spheroids, 1, -1 do 
+        local temp_x, temp_y = getPointsAwayFromPlayer()
+        local spheroid = {
+            type = "spheroid",
+            color = {255/255, 28/255, 168/255},
+            x = temp_x,
+            y = temp_y,
+            radius = 10,
+            speed = love.math.random(SPHEROID_MIN_SPEED, SPHEROID_MAX_SPEED),
+            direction = getRandomDirection(),
+            change_dir_timer = love.math.random(0, SPHEROID_MAX_CHANGE_DIR_TIMER) 
+        }
+        table.insert(things, spheroid)
+        print("BAM")
+    end
     -- Reset number of humans rescued
     player.humans_rescued_this_wave = 0
 end
@@ -317,7 +360,7 @@ function nextWave(restart)
         if current_wave % total_waves == 0 then 
             populateStage(0, 1, 10, 3)
         elseif current_wave % total_waves == 1 then
-            populateStage(2, 2, 10, 10)
+            populateStage(2, 2, 5, 1, 5)
         elseif current_wave % total_waves == 2 then 
             populateStage(30, 30, 5)
         end
@@ -365,6 +408,11 @@ function getRandomCardinalDirection()
     else
         return 3 * math.pi / 2
     end
+end
+
+-- Returns random direction
+function getRandomDirection()
+    return love.math.random(0, 360) * (1 / 360) * 2 * math.pi
 end
 
 function wanderingMovement(wandering_thing, dt, max_change_dir_timer)
