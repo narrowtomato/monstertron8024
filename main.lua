@@ -158,7 +158,7 @@ function love.update(dt)
                 -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
-                        -- Set the bullet and thing to dead
+                        -- Set the bullet and thing (if not Hulk) to dead
                         b.dead = true
                         t.dead = true
                         -- Increase score
@@ -167,14 +167,15 @@ function love.update(dt)
                         spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y)
                     end
                 end
-            end
             -- Hulk/Bullet Collisions
-            if t.type == "hulk" then
+            elseif t.type == "hulk" then
                 for j,b in pairs(bullets) do 
-                    if distanceBetweeen(t.x, t.y, b.x, b.y) <= t.radius then
+                    if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then
                         -- Set the bullet to dead
                         b.dead = true
                         -- Bump the Hulk in the direction the bullet was moving
+                        t.x = t.x + (math.cos( b.direction ) * 5)
+                        t.y = t.y + (math.sin( b.direction ) * 5)
                     end
                 end
             end
