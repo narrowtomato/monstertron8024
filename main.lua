@@ -136,7 +136,7 @@ function love.update(dt)
                     spawnSplodey({ot.color[1], ot.color[2], ot.color[3]}, ot.x, ot.y)
                 end
                 -- Enemy/Human collisions
-                if t.type == "grunt" and ot.type == "human" and distanceBetween(t.x, t.y, ot.x, ot.y) <= t.radius + ot.radius then
+                if (t.type == "grunt" or t.type == "hulk") and ot.type == "human" and distanceBetween(t.x, t.y, ot.x, ot.y) <= t.radius + ot.radius then
                     -- Kill the human
                     ot.dead = true
                     -- Spawn explosion
@@ -144,7 +144,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Player Collisions
-            if t.type == "hazard" or t.type == "grunt" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" then 
                 -- Danger/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Enter Deathstate and set timer
@@ -165,6 +165,16 @@ function love.update(dt)
                         player.score = player.score + t.score
                         -- Spawn explosion
                         spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y)
+                    end
+                end
+            end
+            -- Hulk/Bullet Collisions
+            if t.type == "hulk" then
+                for j,b in pairs(bullets) do 
+                    if distanceBetweeen(t.x, t.y, b.x, b.y) <= t.radius then
+                        -- Set the bullet to dead
+                        b.dead = true
+                        -- Bump the Hulk in the direction the bullet was moving
                     end
                 end
             end
@@ -327,7 +337,7 @@ function nextWave(restart)
         if current_wave % total_waves == 0 then 
             populateStage(0, 1, 10, 3)
         elseif current_wave % total_waves == 1 then
-            populateStage(20, 20, 3, 3)
+            populateStage(2, 2, 10, 10)
         elseif current_wave % total_waves == 2 then 
             populateStage(30, 30, 5)
         end
