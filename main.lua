@@ -25,10 +25,13 @@ function love.load()
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
     HULK_MAX_CHANGE_DIR_TIMER = 4
     SPHEROID_MAX_CHANGE_DIR_TIMER = 6
+    ENFORCER_MAX_CHANGE_DIR_TIMER = 2
 
-    -- Spheroid Speeds
+    -- Speeds
     SPHEROID_MIN_SPEED = 100
     SPHEROID_MAX_SPEED = 140
+    ENFORCER_MIN_SPEED = 100
+    ENFORCER_MAX_SPEED = 140
 
     -- Current Wave and total waves
     current_wave = 0
@@ -72,8 +75,9 @@ function love.update(dt)
             if t.type == "human" then wanderingMovement(t, dt, HUMAN_MAX_CHANGE_DIR_TIMER) end
             if t.type == "hulk" then wanderingMovement(t, dt, HULK_MAX_CHANGE_DIR_TIMER) end
 
-            -- Spheroid Movement (slides against the edges)
-            if t.type == "spheroid" then 
+            -- Update Spheroids
+            if t.type == "spheroid" then
+                enemy_alive = true 
                 -- Move
                 t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
                 t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
@@ -94,6 +98,17 @@ function love.update(dt)
                 t.ring2_radius = t.ring2_radius + 0.5
                 if t.ring1_radius > 15 then t.ring1_radius = 0 end
                 if t.ring2_radius > 15 then t.ring2_radius = 0 end
+                -- Enforcer Spawning
+                t.enforcer_spawn_timer = t.enforcer_spawn_timer - dt 
+                if t.enforcer_spawn_timer < 0 then  -- Spawn enforcer when timer is up
+                    spawnEnforcer(t.x, t.y)
+                    t.enforcer_spawn_timer = love.math.random(4, 7)
+                end
+            end
+
+            -- Update Enforcers
+            if t.type == "enforcer" then
+                enemy_alive = true
             end
 
             -- Human/Player Collisions
@@ -164,7 +179,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Bullet Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" then 
                 -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
@@ -338,10 +353,11 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
             ring2_radius = 15,
             speed = love.math.random(SPHEROID_MIN_SPEED, SPHEROID_MAX_SPEED),
             direction = getRandomDirection(),
-            change_dir_timer = love.math.random(0, SPHEROID_MAX_CHANGE_DIR_TIMER) 
+            change_dir_timer = love.math.random(0, SPHEROID_MAX_CHANGE_DIR_TIMER),
+            enforcer_spawn_timer = love.math.random(4, 7),
+            dead = false
         }
         table.insert(things, spheroid)
-        print("BAM")
     end
     -- Reset number of humans rescued
     player.humans_rescued_this_wave = 0
@@ -449,4 +465,20 @@ function wanderingMovement(wandering_thing, dt, max_change_dir_timer)
     wandering_thing.change_dir_timer = wandering_thing.change_dir_timer - dt
     wandering_thing.x = wandering_thing.x + (math.cos( wandering_thing.direction ) * wandering_thing.speed * dt)
     wandering_thing.y = wandering_thing.y + (math.sin( wandering_thing.direction ) * wandering_thing.speed * dt)
+end
+
+function spawnEnforcer(temp_x, temp_y)
+    local enforcer = {
+        type = "enforcer",
+        score = 150,
+        color = {0/255, 247/255, 255/255},
+        x = temp_x,
+        y = temp_y,
+        radius = 10,
+        speed = love.math.random(ENFORCER_MIN_SPEED, ENFORCER_MAX_SPEED),
+        direction = getRandomDirection(),
+        change_dir_timer = love.math.random(0, ENFORCER_MAX_CHANGE_DIR_TIMER),
+        dead = false
+    }
+    table.insert(things, enforcer)
 end
