@@ -29,6 +29,7 @@ function love.load()
     HULK_MAX_CHANGE_DIR_TIMER = 4
     SPHEROID_MAX_CHANGE_DIR_TIMER = 6
     ENFORCER_MAX_CHANGE_DIR_TIMER = 2
+    BRAIN_MAX_CHANGE_DIR_TIMER = 3
 
     -- Shoot Timers
     ENFORCER_MAX_SHOOT_TIMER = 1
@@ -80,9 +81,10 @@ function love.update(dt)
                 t.speed = t.speed + dt
             end
 
-            -- Update Humans and Hulks with wandering movement
+            -- Update Humans and Hulks and Brains with wandering movement
             if t.type == "human" then wanderingMovement(t, dt, HUMAN_MAX_CHANGE_DIR_TIMER) end
             if t.type == "hulk" then wanderingMovement(t, dt, HULK_MAX_CHANGE_DIR_TIMER) end
+            if t.type == "brain" then wanderingMovement(t, dt, BRAIN_MAX_CHANGE_DIR_TIMER) end
 
             -- Update Spheroids
             if t.type == "spheroid" then
@@ -310,7 +312,7 @@ function love.draw()
     love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
 end
 
-function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spheroids)
+function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spheroids, num_brains)
     -- Clear the stage 
     clearThings()
 
@@ -396,6 +398,24 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
         }
         table.insert(things, spheroid)
     end
+    -- Create Brains
+    n_brains = num_brains or 0
+    for i = n_brains, 1, -1 do 
+        local temp_x, temp_y = getPointsAwayFromPlayer()
+        local brain = {
+            type = "brain",
+            score = 500,
+            color = {180/255, 51/255, 255/255},
+            x = temp_x,
+            y = temp_y,
+            radius = 10,
+            speed = 20,
+            direction = getRandomCardinalDirection(),
+            change_dir_timer = love.math.random(0, BRAIN_MAX_CHANGE_DIR_TIMER),
+            dead = false
+        }
+        table.insert(things, brain)
+    end
     -- Reset number of humans rescued
     player.humans_rescued_this_wave = 0
 end
@@ -431,7 +451,7 @@ function nextWave(restart)
         if current_wave % total_waves == 0 then 
             populateStage(0, 1, 10, 3)
         elseif current_wave % total_waves == 1 then
-            populateStage(2, 2, 5, 1, 5)
+            populateStage(2, 2, 5, 1, 1, 5)
         elseif current_wave % total_waves == 2 then 
             populateStage(30, 30, 5)
         end
