@@ -154,7 +154,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Player Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" then 
                 -- Danger/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Enter Deathstate and set timer
@@ -164,7 +164,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Bullet Collisions
-            if t.type == "hazard" or t.type == "grunt" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" then 
                 -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
@@ -329,6 +329,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
         local temp_x, temp_y = getPointsAwayFromPlayer()
         local spheroid = {
             type = "spheroid",
+            score = 1000,
             color = {255/255, 28/255, 168/255},
             x = temp_x,
             y = temp_y,
