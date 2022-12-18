@@ -18,6 +18,9 @@ function love.load()
     -- Bullet code
     require('bullet')
 
+    -- Enforcer Bullet code
+    require('enforcer_bullet')
+
     -- Explosion code
     require('splodey')
 
@@ -26,6 +29,9 @@ function love.load()
     HULK_MAX_CHANGE_DIR_TIMER = 4
     SPHEROID_MAX_CHANGE_DIR_TIMER = 6
     ENFORCER_MAX_CHANGE_DIR_TIMER = 2
+
+    -- Shoot Timers
+    ENFORCER_MAX_SHOOT_TIMER = 1
 
     -- Speeds
     SPHEROID_MIN_SPEED = 100
@@ -54,6 +60,9 @@ function love.update(dt)
 
         -- Update Bullets
         updateBullets(dt)
+
+        -- Update Enforcer Bullets
+        updateEnforcerBullets(dt)
 
         -- Update Explosions
         updateSplodies(dt)
@@ -117,6 +126,12 @@ function love.update(dt)
                 end
                 t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
                 t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
+                -- Shoot at player
+                t.shoot_timer = t.shoot_timer - dt 
+                if t.shoot_timer < 0 then 
+                    spawnEnforcerBullet(t)
+                    t.shoot_timer = ENFORCER_MAX_SHOOT_TIMER + love.math.random(1, 255) / 255
+                end
             end
 
             -- Human/Player Collisions
@@ -214,6 +229,16 @@ function love.update(dt)
             end
         end
 
+        -- Enforcer Bullet/Player Collisions
+        for k,eb in pairs(enforcer_bullets) do 
+            if distanceBetween(eb.x, eb.y, player.x, player.y) <= player.radius then
+                eb.dead = true 
+                gameState = DEATH
+                spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y)
+                player.death_timer = 2
+            end
+        end
+
         -- Remove dead things
         for i=#things, 1, -1 do 
             local t = things[i]
@@ -254,6 +279,9 @@ function love.draw()
         -- Draw bullets
         drawBullets()
 
+        -- Draw Enforcer Bullets
+        drawEnforcerBullets()
+
         -- Draw explosions
         drawSplodies()
 
@@ -285,6 +313,7 @@ end
 function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spheroids)
     -- Clear the stage 
     clearThings()
+
     -- Create hazards
     for i = num_hazards, 1, -1 do
         local temp_x, temp_y = getPointsAwayFromPlayer()
@@ -382,12 +411,19 @@ end
 
 -- Function to advance to the next wave
 function nextWave(restart)
+
+    -- Clear Bullets
+    for k,b in pairs(bullets) do b.dead = true end
+    for k,eb in pairs(enforcer_bullets) do eb.dead = true end
     restart = restart or false
+
     -- Center the player
     player.x = love.graphics.getWidth() / 2
     player.y = love.graphics.getHeight() / 2
+
     -- Create reverse explosion for the player
     spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y, true)
+    
     -- Increment the wave if not restarting
     if not restart then 
         current_wave = current_wave + 1
@@ -401,6 +437,7 @@ function nextWave(restart)
         end
     end
     gameState = SPAWNING
+    
     -- Create all reverse explosions
     for k,t in pairs(things) do 
         spawnSplodey({t.color[1], t.color[2], t.color[3]}, t.x, t.y, true)
@@ -486,6 +523,7 @@ function spawnEnforcer(temp_x, temp_y)
         speed = love.math.random(ENFORCER_MIN_SPEED, ENFORCER_MAX_SPEED),
         direction = getRandomDirection(),
         change_dir_timer = love.math.random(0, ENFORCER_MAX_CHANGE_DIR_TIMER),
+        shoot_timer = ENFORCER_MAX_SHOOT_TIMER,
         dead = false
     }
     table.insert(things, enforcer)
