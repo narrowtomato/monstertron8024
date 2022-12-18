@@ -109,6 +109,14 @@ function love.update(dt)
             -- Update Enforcers
             if t.type == "enforcer" then
                 enemy_alive = true
+                -- Move Towards Player, recalculating direction on timer
+                t.change_dir_timer = t.change_dir_timer - dt
+                if t.change_dir_timer < 0 then 
+                    t.direction = thingPlayerAngle(t)
+                    t.change_dir_timer = love.math.random(1, ENFORCER_MAX_CHANGE_DIR_TIMER)
+                end
+                t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
+                t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
             end
 
             -- Human/Player Collisions
