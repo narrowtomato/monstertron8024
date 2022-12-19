@@ -27,12 +27,16 @@ function love.load()
     -- Brain Missile Code
     require('missile')
 
+    -- Prog Code
+    require('prog')
+
     -- Max timers for direction changes
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
     HULK_MAX_CHANGE_DIR_TIMER = 4
     SPHEROID_MAX_CHANGE_DIR_TIMER = 6
     ENFORCER_MAX_CHANGE_DIR_TIMER = 2
     BRAIN_MAX_CHANGE_DIR_TIMER = 3
+    PROG_MAX_CHANGE_DIR_TIMER = 1
 
     -- Shoot Timers
     ENFORCER_MAX_SHOOT_TIMER = 1
@@ -205,6 +209,13 @@ function love.update(dt)
                     -- Spawn explosion
                     spawnSplodey({ot.color[1], ot.color[2], ot.color[3]}, ot.x, ot.y)
                 end
+                -- Brain/Human collisions
+                if t.type == "brain" and ot.type == "human" and distanceBetween(t.x, t.y, ot.x, ot.y) <= t.radius + ot.radius then
+                    -- Kill the human
+                    ot.dead = true 
+                    -- Spawn a Prog
+                    spawnProg(ot.x, ot.y)
+                end
             end
             -- Thing/Player Collisions
             if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" then 
@@ -259,6 +270,7 @@ function love.update(dt)
             -- With Bullets
             for j,b in pairs(bullets) do 
                 if distanceBetween(m.x, m.y, b.x, b.y) < m.radius then 
+                    p.score = p.score + 25
                     m.dead = true
                     b.dead = true
                     spawnSplodey({1, 1, 1}, m.x, m.y)
@@ -266,7 +278,6 @@ function love.update(dt)
             end
             -- With player
             if distanceBetween(m.x, m.y, player.x, player.y) <= player.radius + m.radius then
-                m.dead = true 
                 gameState = DEATH
                 spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y)
                 player.death_timer = 2
@@ -333,6 +344,8 @@ function love.draw()
                 elseif t.type == "spheroid" then 
                     love.graphics.circle("line", t.x, t.y, t.ring1_radius)
                     love.graphics.circle("line", t.x, t.y, t.ring2_radius)
+                elseif t.type == "prog" then 
+                    love.graphics.rectangle("fill", t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2)
                 else
                     love.graphics.circle("fill", t.x, t.y, t.radius)
                 end
@@ -487,7 +500,7 @@ function nextWave(restart)
         if current_wave % total_waves == 0 then 
             populateStage(0, 1, 10, 3)
         elseif current_wave % total_waves == 1 then
-            populateStage(2, 2, 5, 1, 1, 5)
+            populateStage(1, 1, 10, 1, 1, 10)
         elseif current_wave % total_waves == 2 then 
             populateStage(30, 30, 5)
         end
