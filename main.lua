@@ -194,7 +194,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Player Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" then 
                 -- Danger/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Enter Deathstate and set timer
@@ -204,7 +204,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Bullet Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" then 
                 -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
