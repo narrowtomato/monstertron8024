@@ -254,6 +254,25 @@ function love.update(dt)
             end
         end
 
+        -- Missile Collisions
+        for k,m in pairs(missiles) do 
+            -- With Bullets
+            for j,b in pairs(bullets) do 
+                if distanceBetween(m.x, m.y, b.x, b.y) < m.radius then 
+                    m.dead = true
+                    b.dead = true
+                    spawnSplodey({1, 1, 1}, m.x, m.y)
+                end
+            end
+            -- With player
+            if distanceBetween(m.x, m.y, player.x, player.y) <= player.radius + m.radius then
+                m.dead = true 
+                gameState = DEATH
+                spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y)
+                player.death_timer = 2
+            end
+        end
+
         -- Remove dead things
         for i=#things, 1, -1 do 
             local t = things[i]

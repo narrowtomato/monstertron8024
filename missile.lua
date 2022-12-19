@@ -17,6 +17,11 @@ function updateMissiles(dt)
             table.remove(m.tail_y, 1)
         end
     end
+
+    -- Remove Dead Missiles
+    for i=#missiles, 1, -1 do
+        if missiles[i].dead then table.remove(missiles, i) end
+    end
 end
 
 function drawMissiles()

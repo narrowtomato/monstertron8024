@@ -35,6 +35,10 @@ function player:draw()
 end
 
 function playerDeath()
+    -- Set all bullets to dead
+    for i=#missiles, 1, -1 do missiles[i].dead = true end
+    -- Set all missiles to dead
+    for i=#bullets, 1, -1 do bullets[i].dead = true end
     -- Shuffle the stage
     shuffleStage()
     -- Decrement Lives
