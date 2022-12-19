@@ -95,6 +95,7 @@ function love.update(dt)
             if t.type == "human" then wanderingMovement(t, dt, HUMAN_MAX_CHANGE_DIR_TIMER) end
             if t.type == "hulk" then wanderingMovement(t, dt, HULK_MAX_CHANGE_DIR_TIMER) end
             if t.type == "brain" then 
+                enemy_alive = true
                 wanderingMovement(t, dt, BRAIN_MAX_CHANGE_DIR_TIMER) 
                 t.missile_spawn_timer = t.missile_spawn_timer - dt
                 if t.missile_spawn_timer < 0 then 
@@ -104,7 +105,10 @@ function love.update(dt)
             end
 
             -- Prog Movement
-            if t.type == "prog" then updateProg(t, dt) end
+            if t.type == "prog" then 
+                enemy_alive = true
+                updateProg(t, dt) 
+            end
 
             -- Update Spheroids
             if t.type == "spheroid" then
@@ -221,7 +225,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Player Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" then 
                 -- Danger/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Enter Deathstate and set timer
@@ -231,7 +235,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Bullet Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" then 
                 -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
@@ -273,7 +277,7 @@ function love.update(dt)
             -- With Bullets
             for j,b in pairs(bullets) do 
                 if distanceBetween(m.x, m.y, b.x, b.y) < m.radius then 
-                    p.score = p.score + 25
+                    player.score = player.score + 25
                     m.dead = true
                     b.dead = true
                     spawnSplodey({1, 1, 1}, m.x, m.y)
@@ -483,6 +487,11 @@ end
 
 -- Function to advance to the next wave
 function nextWave(restart)
+
+    -- Set all bullets to dead
+    for i=#missiles, 1, -1 do missiles[i].dead = true end
+    -- Set all missiles to dead
+    for i=#bullets, 1, -1 do bullets[i].dead = true end
 
     -- Clear Bullets
     for k,b in pairs(bullets) do b.dead = true end
