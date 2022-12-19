@@ -103,6 +103,9 @@ function love.update(dt)
                 end
             end
 
+            -- Prog Movement
+            if t.type == "prog" then updateProg(t, dt) end
+
             -- Update Spheroids
             if t.type == "spheroid" then
                 enemy_alive = true 
