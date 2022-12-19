@@ -24,6 +24,9 @@ function love.load()
     -- Explosion code
     require('splodey')
 
+    -- Brain Missile Code
+    require('missile')
+
     -- Max timers for direction changes
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
     HULK_MAX_CHANGE_DIR_TIMER = 4
@@ -65,6 +68,9 @@ function love.update(dt)
         -- Update Enforcer Bullets
         updateEnforcerBullets(dt)
 
+        -- Update Missiles
+        updateMissiles(dt)
+
         -- Update Explosions
         updateSplodies(dt)
 
@@ -84,7 +90,14 @@ function love.update(dt)
             -- Update Humans and Hulks and Brains with wandering movement
             if t.type == "human" then wanderingMovement(t, dt, HUMAN_MAX_CHANGE_DIR_TIMER) end
             if t.type == "hulk" then wanderingMovement(t, dt, HULK_MAX_CHANGE_DIR_TIMER) end
-            if t.type == "brain" then wanderingMovement(t, dt, BRAIN_MAX_CHANGE_DIR_TIMER) end
+            if t.type == "brain" then 
+                wanderingMovement(t, dt, BRAIN_MAX_CHANGE_DIR_TIMER) 
+                t.missile_spawn_timer = t.missile_spawn_timer - dt
+                if t.missile_spawn_timer < 0 then 
+                    spawnMissile(t.x, t.y)
+                    t.missile_spawn_timer = love.math.random(5, 8)
+                end
+            end
 
             -- Update Spheroids
             if t.type == "spheroid" then
@@ -284,6 +297,9 @@ function love.draw()
         -- Draw Enforcer Bullets
         drawEnforcerBullets()
 
+        -- Draw Missiles
+        drawMissiles()
+
         -- Draw explosions
         drawSplodies()
 
@@ -412,6 +428,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
             speed = 20,
             direction = getRandomCardinalDirection(),
             change_dir_timer = love.math.random(0, BRAIN_MAX_CHANGE_DIR_TIMER),
+            missile_spawn_timer = love.math.random(5, 8),
             dead = false
         }
         table.insert(things, brain)
