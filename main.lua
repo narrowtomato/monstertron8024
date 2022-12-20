@@ -30,6 +30,9 @@ function love.load()
     -- Prog Code
     require('prog')
 
+    -- Tank Code
+    require('tank')
+
     -- Max timers for direction changes
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
     HULK_MAX_CHANGE_DIR_TIMER = 4
@@ -38,6 +41,7 @@ function love.load()
     BRAIN_MAX_CHANGE_DIR_TIMER = 3
     PROG_MAX_CHANGE_DIR_TIMER = 1
     QUARK_MAX_CHANGE_DIR_TIMER = 1
+    TANK_MAX_CHANGE_DIR_TIMER = 2
 
     -- Shoot Timers
     ENFORCER_MAX_SHOOT_TIMER = 1
@@ -111,6 +115,12 @@ function love.update(dt)
                 updateProg(t, dt) 
             end
 
+            -- Tank Movement
+            if t.type == "tank" then 
+                enemy_alive = true 
+                updateTank(t, dt)
+            end
+
             -- Spheroid and Quark Movement
             if t.type == "spheroid" or t.type == "quark" then
                 enemy_alive = true 
@@ -135,6 +145,15 @@ function love.update(dt)
                         t.direction = getRandomDirection()
                         t.change_dir_timer = QUARK_MAX_CHANGE_DIR_TIMER
                     end
+                end
+            end
+
+            -- Quark spawning tanks
+            if t.type == "quark" then 
+                t.tank_spawn_timer = t.tank_spawn_timer - dt
+                if t.tank_spawn_timer < 0 then
+                    spawnTank(t.x, t.y)
+                    t.tank_spawn_timer = love.math.random(3, 6)
                 end
             end
 
@@ -237,7 +256,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Player Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" or t.type == "quark" or t.type == "tank" then 
                 -- Danger/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Enter Deathstate and set timer
@@ -247,7 +266,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Bullet Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" or t.type == "quark" or t.type == "tank" then 
                 -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
@@ -358,13 +377,11 @@ function love.draw()
             if t.type == "score_blip" then 
                 love.graphics.print(t.text, t.x, t.y)
             else
-                if t.type == "hulk" then
+                if t.type == "hulk" or t.type == "prog" or t.type == "tank" then
                     love.graphics.rectangle("fill", t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2)
                 elseif t.type == "spheroid" then 
                     love.graphics.circle("line", t.x, t.y, t.ring1_radius)
                     love.graphics.circle("line", t.x, t.y, t.ring2_radius)
-                elseif t.type == "prog" then 
-                    love.graphics.rectangle("fill", t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2)
                 else
                     love.graphics.circle("fill", t.x, t.y, t.radius)
                 end
@@ -498,7 +515,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
             speed = 300,
             direction = getRandomDirection(),
             change_dir_timer = 4,
-            tank_spawn_timer = love.math.random(4, 7),
+            tank_spawn_timer = love.math.random(3, 6),
             dead = false
         }
         table.insert(things,quark)
@@ -591,6 +608,19 @@ function getRandomCardinalDirection()
         return math.pi 
     else
         return 3 * math.pi / 2
+    end
+end
+
+function getRandomDiagonalDirection()
+    local r = love.math.random(1, 4)
+    if r == 1 then 
+        return math.pi / 4
+    elseif r == 2 then 
+        return 3 * math.pi / 4
+    elseif r == 3 then 
+        return 5 * math.pi / 4
+    else
+        return 7 * math.pi / 4
     end
 end
 
