@@ -37,6 +37,7 @@ function love.load()
     ENFORCER_MAX_CHANGE_DIR_TIMER = 2
     BRAIN_MAX_CHANGE_DIR_TIMER = 3
     PROG_MAX_CHANGE_DIR_TIMER = 1
+    QUARK_MAX_CHANGE_DIR_TIMER = 1
 
     -- Shoot Timers
     ENFORCER_MAX_SHOOT_TIMER = 1
@@ -110,8 +111,8 @@ function love.update(dt)
                 updateProg(t, dt) 
             end
 
-            -- Update Spheroids
-            if t.type == "spheroid" then
+            -- Spheroid and Quark Movement
+            if t.type == "spheroid" or t.type == "quark" then
                 enemy_alive = true 
                 -- Move
                 t.x = t.x + (math.cos( t.direction ) * t.speed * dt)
@@ -123,11 +124,22 @@ function love.update(dt)
                 if t.y > love.graphics.getHeight() - t.radius then t.y = love.graphics.getHeight() - t.radius end
                 -- Change direction when timer is out
                 t.change_dir_timer = t.change_dir_timer - dt
-                if t.change_dir_timer < 0 then
-                    t.direction = getRandomDirection()
-                    t.change_dir_timer = SPHEROID_MAX_CHANGE_DIR_TIMER
-                    t.speed = love.math.random(SPHEROID_MIN_SPEED, SPHEROID_MAX_SPEED)
+                if t.type == "spheroid" then 
+                    if t.change_dir_timer < 0 then
+                        t.direction = getRandomDirection()
+                        t.change_dir_timer = SPHEROID_MAX_CHANGE_DIR_TIMER
+                        t.speed = love.math.random(SPHEROID_MIN_SPEED, SPHEROID_MAX_SPEED)
+                    end
+                elseif t.type == "quark" then
+                    if t.change_dir_timer < 0 then
+                        t.direction = getRandomDirection()
+                        t.change_dir_timer = QUARK_MAX_CHANGE_DIR_TIMER
+                    end
                 end
+            end
+
+            -- Spheroids
+            if t.type == "spheroid" then
                 -- Animation
                 t.ring1_radius = t.ring1_radius + 0.5
                 t.ring2_radius = t.ring2_radius + 0.5
@@ -483,7 +495,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
             x = temp_x,
             y = temp_y,
             radius = 15,
-            speed = 50,
+            speed = 300,
             direction = getRandomDirection(),
             change_dir_timer = 4,
             tank_spawn_timer = love.math.random(4, 7),
