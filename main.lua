@@ -367,7 +367,7 @@ function love.draw()
     love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
 end
 
-function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spheroids, num_brains)
+function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spheroids, num_brains, num_quarks)
     -- Clear the stage 
     clearThings()
 
@@ -472,6 +472,25 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
         }
         table.insert(things, brain)
     end
+    -- Create Quarks
+    n_quarks = num_quarks or 0
+    for i = n_quarks, 1, -1 do 
+        local temp_x, temp_y = getPointsAwayFromPlayer()
+        local quark = {
+            type = "quark",
+            score = 1000,
+            color = {255/255, 56/255, 185/255},
+            x = temp_x,
+            y = temp_y,
+            radius = 15,
+            speed = 50,
+            direction = getRandomDirection(),
+            change_dir_timer = 4,
+            tank_spawn_timer = love.math.random(4, 7),
+            dead = false
+        }
+        table.insert(things,quark)
+    end
     -- Reset number of humans rescued
     player.humans_rescued_this_wave = 0
 end
@@ -512,7 +531,7 @@ function nextWave(restart)
         if current_wave % total_waves == 0 then 
             populateStage(0, 1, 10, 3)
         elseif current_wave % total_waves == 1 then
-            populateStage(1, 1, 10, 1, 1, 10)
+            populateStage(1, 1, 10, 1, 1, 1, 10)
         elseif current_wave % total_waves == 2 then 
             populateStage(30, 30, 5)
         end
