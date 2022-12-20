@@ -54,7 +54,7 @@ function love.load()
 
     -- Current Wave and total waves
     current_wave = 0
-    total_waves = 3
+    total_waves = 7
 end
 
 function love.update(dt)
@@ -567,11 +567,19 @@ function nextWave(restart)
         current_wave = current_wave + 1
         -- Spawn different enemies per wave
         if current_wave % total_waves == 0 then 
-            populateStage(0, 1, 10, 3)
+            populateStage(0, 1, 20)
         elseif current_wave % total_waves == 1 then
-            populateStage(1, 1, 10, 1, 1, 1, 10)
-        elseif current_wave % total_waves == 2 then 
-            populateStage(30, 30, 5)
+            populateStage(10, 30, 5)
+        elseif current_wave % total_waves == 2 then
+            populateStage(10, 20, 7, 5, 1)
+        elseif current_wave % total_waves == 3 then
+            populateStage(20, 30, 7, 7, 3)
+        elseif current_wave % total_waves == 4 then
+            populateStage(10, 0, 20, 5, 0, 10)
+        elseif current_wave % total_waves == 5 then
+            populateStage(10, 0, 20, 5, 0, 0, 10)
+        elseif current_wave % total_waves == 6 then 
+            populateStage(10, 40, 5)
         end
     end
     gameState = SPAWNING
@@ -599,7 +607,7 @@ function getPointsAwayFromPlayer()
     local temp_x = player.x
     local temp_y = player.y
     -- Precalculate these and make sure they're not on top of the player 
-    while math.abs(temp_x - player.x) < (player.radius * 4) and math.abs(temp_y - player.y) < (player.radius * 4) do
+    while math.abs(temp_x - player.x) < (player.radius * 8) and math.abs(temp_y - player.y) < (player.radius * 8) do
         temp_x = love.math.random(0, love.graphics.getWidth())
         temp_y = love.math.random(0, love.graphics.getHeight())
     end
