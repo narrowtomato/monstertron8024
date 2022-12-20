@@ -121,6 +121,11 @@ function love.update(dt)
                 updateTank(t, dt)
             end
 
+            -- Shell Movement
+            if t.type == "shell" then
+                updateShell(t, dt)
+            end
+
             -- Spheroid and Quark Movement
             if t.type == "spheroid" or t.type == "quark" then
                 enemy_alive = true 
@@ -256,7 +261,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Player Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" or t.type == "quark" or t.type == "tank" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "hulk" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" or t.type == "quark" or t.type == "tank" or t.type == "shell" then 
                 -- Danger/Player Collisions
                 if distanceBetween(t.x, t.y, player.x, player.y) <= t.radius + player.radius then 
                     -- Enter Deathstate and set timer
@@ -266,7 +271,7 @@ function love.update(dt)
                 end
             end
             -- Thing/Bullet Collisions
-            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" or t.type == "quark" or t.type == "tank" then 
+            if t.type == "hazard" or t.type == "grunt" or t.type == "spheroid" or t.type == "enforcer" or t.type == "brain" or t.type == "prog" or t.type == "quark" or t.type == "tank" or t.type == "shell" then 
                 -- Killables/Bullet Collisions
                 for j,b in pairs(bullets) do 
                     if distanceBetween(t.x, t.y, b.x, b.y) <= t.radius then 
@@ -540,6 +545,10 @@ function nextWave(restart)
     for i=#missiles, 1, -1 do missiles[i].dead = true end
     -- Set all missiles to dead
     for i=#bullets, 1, -1 do bullets[i].dead = true end
+    -- Set all shells to dead
+    for k,t in pairs(things) do
+        if t.type == "shell" then t.dead = true end
+    end
 
     -- Clear Bullets
     for k,b in pairs(bullets) do b.dead = true end

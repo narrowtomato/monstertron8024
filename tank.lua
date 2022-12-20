@@ -20,7 +20,21 @@ function updateTank(tank, dt)
     tank.y = tank.y + math.sin(tank.direction) * tank.speed * dt
     tank.change_dir_timer = tank.change_dir_timer - dt 
     tank.shoot_timer = tank.shoot_timer - dt 
-    -- Chagning direction
+    -- Make sure they don't go offscreen
+    if tank.x <= 5 then
+        tank.direction = 0
+        tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
+    elseif tank.x >= love.graphics.getWidth() - 5 then 
+        tank.direction = math.pi
+        tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
+    elseif tank.y < 5 then 
+        tank.direction = math.pi / 2
+        tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
+    elseif tank.y >= love.graphics.getHeight() - 5 then 
+        tank.direction = 3 * math.pi / 2
+        tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
+    end
+    -- Changing direction
     if tank.change_dir_timer < 0 then
         tank.direction = getRandomDiagonalDirection()
         tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
@@ -45,4 +59,18 @@ function spawnShell(tank)
         dead = false
     }
     table.insert(things, shell)
+end
+
+function updateShell(shell, dt)
+    -- Movement
+    shell.x = shell.x + math.cos(shell.direction) * shell.speed * dt
+    shell.y = shell.y + math.sin(shell.direction) * shell.speed * dt
+    -- Bouncing off walls
+    if shell.x < 8 or shell.x > love.graphics.getWidth() - 8 then 
+        shell.direction = -1 * math.pi - shell.direction 
+        --  r = -Pi - i
+    elseif shell.y < 8 or shell.y > love.graphics.getHeight() - 8 then
+        shell.direction = 2 * math.pi - shell.direction
+        --  r = 2*Pi - i 
+    end
 end
