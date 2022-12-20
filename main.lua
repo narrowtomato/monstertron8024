@@ -54,7 +54,7 @@ function love.load()
 
     -- Current Wave and total waves
     current_wave = 0
-    total_waves = 7
+    total_waves = 21
 end
 
 function love.update(dt)
@@ -430,7 +430,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
             x = temp_x,
             y = temp_y,
             radius = 10,
-            speed = love.math.random(10, 30),
+            speed = love.math.random(20, 40),
             dead = false
         }
         table.insert(things, grunt)
@@ -517,7 +517,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
             x = temp_x,
             y = temp_y,
             radius = 15,
-            speed = 300,
+            speed = 250,
             direction = getRandomDirection(),
             change_dir_timer = 4,
             tank_spawn_timer = love.math.random(3, 6),
@@ -575,14 +575,43 @@ function nextWave(restart)
         elseif current_wave % total_waves == 3 then
             populateStage(20, 30, 7, 7, 3)
         elseif current_wave % total_waves == 4 then
-            populateStage(10, 0, 20, 5, 0, 10)
+            populateStage(20, 0, 30, 5, 3, 15)
         elseif current_wave % total_waves == 5 then
-            populateStage(10, 0, 20, 5, 0, 0, 10)
+            populateStage(20, 0, 20, 5, 3, 0, 8)
         elseif current_wave % total_waves == 6 then 
-            populateStage(10, 40, 5)
+            populateStage(20, 40, 5)
+        elseif current_wave % total_waves == 7 then
+            populateStage(50, 20, 20, 6, 5, 4, 4)
+        elseif current_wave % total_waves == 8 then
+            populateStage(30, 20, 20, 7, 5, 0, 4)
+        elseif current_wave % total_waves == 9 then
+            populateStage(30, 20, 20, 8, 5, 0, 5)
+        elseif current_wave % total_waves == 10 then
+            populateStage(30, 20, 20, 9, 5, 0, 6)
+        elseif current_wave % total_waves == 11 then
+            populateStage(5, 0, 40, 10, 5, 20)
+        elseif current_wave % total_waves == 12 then
+            populateStage(30, 20, 20, 10, 5, 0, 7)
+        elseif current_wave % total_waves == 13 then
+            populateStage(10, 60, 5)
+        elseif current_wave % total_waves == 14 then
+            populateStage(50, 20, 20, 10, 5, 0, 8)
+        elseif current_wave % total_waves == 15 then
+            populateStage(60, 20, 20, 10, 5, 0, 9)
+        elseif current_wave % total_waves == 16 then
+            populateStage(0, 0, 40, 10, 6, 5, 10)
+        elseif current_wave % total_waves == 17 then
+            populateStage(40, 20, 40, 0, 0, 30)
+        elseif current_wave % total_waves == 18 then
+            populateStage(40, 20, 20, 10, 7, 0, 10)
+        elseif current_wave % total_waves == 19 then
+            populateStage(0, 80, 5)
+        elseif current_wave % total_waves == 20 then
+            populateStage(40, 20, 20, 15, 8, 10, 10)
         end
     end
     gameState = SPAWNING
+    shuffleStage()
     
     -- Create all reverse explosions
     for k,t in pairs(things) do 
@@ -607,7 +636,7 @@ function getPointsAwayFromPlayer()
     local temp_x = player.x
     local temp_y = player.y
     -- Precalculate these and make sure they're not on top of the player 
-    while math.abs(temp_x - player.x) < (player.radius * 8) and math.abs(temp_y - player.y) < (player.radius * 8) do
+    while math.abs(temp_x - player.x) < (player.radius * 10) and math.abs(temp_y - player.y) < (player.radius * 10) do
         temp_x = love.math.random(0, love.graphics.getWidth())
         temp_y = love.math.random(0, love.graphics.getHeight())
     end
