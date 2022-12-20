@@ -545,9 +545,10 @@ function nextWave(restart)
     for i=#missiles, 1, -1 do missiles[i].dead = true end
     -- Set all missiles to dead
     for i=#bullets, 1, -1 do bullets[i].dead = true end
-    -- Set all shells to dead
+    -- Set all shells and enforcers to dead
     for k,t in pairs(things) do
         if t.type == "shell" then t.dead = true end
+        if t.type == "enforcer" then t.dead = true end
     end
 
     -- Clear Bullets
