@@ -24,8 +24,6 @@ end
 
 local anim8 = require 'lib/anim8-master/anim8'
 
-local image, animation
-
 function love.load()
     -- Make sure numbers are truly random
     math.randomseed(os.time())
@@ -85,11 +83,15 @@ function love.load()
     total_waves = 21
 
     -- Animations and Images
-    -- local player_anim_grid = anim8.newGrid(32, 32, player_image:getWidth(), player_image:getHeight())
-    -- player_animation = anim8.newAnimation(player_anim_grid(1, 1), 1)
+    skel_image = love.graphics.newImage('sprites/skel.png')
+    local skel_anim_grid = anim8.newGrid(32, 32, skel_image:getWidth(), skel_image:getHeight())
+    skel_animation = anim8.newAnimation(skel_anim_grid('1-4', 1), 0.1)
 end
 
 function love.update(dt)
+    -- Update animations
+    skel_animation:update(dt)
+
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
             gameState = RUNNING
@@ -422,6 +424,8 @@ function love.draw()
                 elseif t.type == "spheroid" then 
                     love.graphics.circle("line", t.x, t.y, t.ring1_radius)
                     love.graphics.circle("line", t.x, t.y, t.ring2_radius)
+                elseif t.type == "grunt" then 
+                    skel_animation:draw(skel_image, t.x - 16, t.y - 16)
                 else
                     love.graphics.circle("fill", t.x, t.y, t.radius)
                 end
@@ -462,7 +466,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
         local grunt = {
             type = "grunt",
             score = 100,
-            color = {1, 0.5, 0},
+            color = {176/255, 148/255, 132/255},
             x = temp_x,
             y = temp_y,
             radius = 10,
