@@ -1,8 +1,8 @@
 player = {
     color = {1, 1, 0},
     speed=200, 
-    x=love.graphics.getWidth() / 2, 
-    y=love.graphics.getHeight() / 2, 
+    x=gameWidth / 2, 
+    y=gameHeight / 2, 
     radius=10,
     humans_rescued_this_wave = 0,
     total_humans_rescued = 0,
@@ -14,7 +14,7 @@ player = {
 function player:update(dt)
     if gameState == 2 then
         -- Player Movement
-        if love.keyboard.isDown("d") and self.x < love.graphics.getWidth() - 5 then
+        if love.keyboard.isDown("d") and self.x < gameWidth - 5 then
             self.x = self.x + self.speed * dt
         end
         if love.keyboard.isDown("a") and self.x > 5 then
@@ -23,7 +23,7 @@ function player:update(dt)
         if love.keyboard.isDown("w") and self.y > 5 then
             self.y = self.y - self.speed * dt
         end
-        if love.keyboard.isDown("s") and self.y < love.graphics.getHeight() - 5 then
+        if love.keyboard.isDown("s") and self.y < gameHeight - 5 then
             self.y = self.y + self.speed * dt
         end
     end

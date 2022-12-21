@@ -1,3 +1,23 @@
+push = require('push')
+
+love.graphics.setDefaultFilter("nearest", "nearest") --disable blurry scaling
+  
+gameWidth, gameHeight = 800, 600
+
+windowWidth, windowHeight = love.window.getDesktopDimensions()
+windowWidth, windowHeight = windowWidth*.5, windowHeight*.5
+
+push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {
+  fullscreen = false,
+  resizable = true,
+  pixelperfect = true
+})
+push:setBorderColor{0, 1, 0} --default value
+
+function love.resize(w, h)
+    push:resize(w, h)
+end
+
 function love.load()
     -- Make sure numbers are truly random
     math.randomseed(os.time())
@@ -134,9 +154,9 @@ function love.update(dt)
                 t.y = t.y + (math.sin( t.direction ) * t.speed * dt)
                 -- Slide against walls
                 if t.x < 0 + t.radius then t.x = t.radius end
-                if t.x > love.graphics.getWidth() - t.radius then t.x = love.graphics.getWidth() - t.radius end
+                if t.x > gameWidth - t.radius then t.x = gameWidth - t.radius end
                 if t.y < 0 + t.radius then t.y = t.radius end
-                if t.y > love.graphics.getHeight() - t.radius then t.y = love.graphics.getHeight() - t.radius end
+                if t.y > gameHeight - t.radius then t.y = gameHeight - t.radius end
                 -- Change direction when timer is out
                 t.change_dir_timer = t.change_dir_timer - dt
                 if t.type == "spheroid" then 
@@ -355,9 +375,12 @@ function love.update(dt)
 end
 
 function love.draw() 
+    push:apply("start")
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.rectangle("fill", 0,0, gameWidth,gameHeight)
     if gameState == MENU then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.printf("Press Space to Begin!", 0, 50, love.graphics.getWidth(), "center")
+        love.graphics.printf("Press Space to Begin!", 0, 50, gameWidth, "center")
     elseif gameState == RUNNING or gameState == DEATH then
         -- Draw player if not in death state 
         if gameState == RUNNING then
@@ -399,6 +422,7 @@ function love.draw()
     -- Score and Wave Display
     love.graphics.setColor(1, 1, 1)
     love.graphics.print("SCORE: " .. player.score .. "    WAVE: " .. current_wave .. "    LIVES: " .. player.lives )
+    push:apply("end")
 end
 
 function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spheroids, num_brains, num_quarks)
@@ -440,8 +464,8 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
         local human = {
             type = "human",
             color = {0, 0, 1},
-            x = love.math.random(0, love.graphics.getWidth()),
-            y = love.math.random(0, love.graphics.getHeight()),
+            x = love.math.random(0, gameWidth),
+            y = love.math.random(0, gameHeight),
             radius = 10,
             speed = 30,
             dead = false,
@@ -557,8 +581,8 @@ function nextWave(restart)
     restart = restart or false
 
     -- Center the player
-    player.x = love.graphics.getWidth() / 2
-    player.y = love.graphics.getHeight() / 2
+    player.x = gameWidth / 2
+    player.y = gameHeight / 2
 
     -- Create reverse explosion for the player
     spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y, true)
@@ -638,8 +662,8 @@ function getPointsAwayFromPlayer()
     local temp_y = player.y
     -- Precalculate these and make sure they're not on top of the player 
     while math.abs(temp_x - player.x) < (player.radius * 10) and math.abs(temp_y - player.y) < (player.radius * 10) do
-        temp_x = love.math.random(0, love.graphics.getWidth())
-        temp_y = love.math.random(0, love.graphics.getHeight())
+        temp_x = love.math.random(0, gameWidth)
+        temp_y = love.math.random(0, gameHeight)
     end
     return temp_x, temp_y
 end
@@ -681,13 +705,13 @@ function wanderingMovement(wandering_thing, dt, max_change_dir_timer)
     if wandering_thing.x <= 5 then
         wandering_thing.direction = 0
         wandering_thing.change_dir_timer = max_change_dir_timer
-    elseif wandering_thing.x >= love.graphics.getWidth() - 5 then 
+    elseif wandering_thing.x >= gameWidth - 5 then 
         wandering_thing.direction = math.pi
         wandering_thing.change_dir_timer = max_change_dir_timer
     elseif wandering_thing.y < 5 then 
         wandering_thing.direction = math.pi / 2
         wandering_thing.change_dir_timer = max_change_dir_timer
-    elseif wandering_thing.y >= love.graphics.getHeight() - 5 then 
+    elseif wandering_thing.y >= gameHeight - 5 then 
         wandering_thing.direction = 3 * math.pi / 2
         wandering_thing.change_dir_timer = max_change_dir_timer
     end

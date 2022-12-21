@@ -24,13 +24,13 @@ function updateTank(tank, dt)
     if tank.x <= 5 then
         tank.direction = 0
         tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
-    elseif tank.x >= love.graphics.getWidth() - 5 then 
+    elseif tank.x >= gameWidth - 5 then 
         tank.direction = math.pi
         tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
     elseif tank.y < 5 then 
         tank.direction = math.pi / 2
         tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
-    elseif tank.y >= love.graphics.getHeight() - 5 then 
+    elseif tank.y >= gameHeight - 5 then 
         tank.direction = 3 * math.pi / 2
         tank.change_dir_timer = TANK_MAX_CHANGE_DIR_TIMER
     end
@@ -66,10 +66,10 @@ function updateShell(shell, dt)
     shell.x = shell.x + math.cos(shell.direction) * shell.speed * dt
     shell.y = shell.y + math.sin(shell.direction) * shell.speed * dt
     -- Bouncing off walls
-    if shell.x < 8 or shell.x > love.graphics.getWidth() - 8 then 
+    if shell.x < 8 or shell.x > gameWidth - 8 then 
         shell.direction = -1 * math.pi - shell.direction 
         --  r = -Pi - i
-    elseif shell.y < 8 or shell.y > love.graphics.getHeight() - 8 then
+    elseif shell.y < 8 or shell.y > gameHeight - 8 then
         shell.direction = 2 * math.pi - shell.direction
         --  r = 2*Pi - i 
     end

@@ -11,7 +11,7 @@ function updateEnforcerBullets(dt)
     -- Despawn bullet when offscreen (reverse loop to avoid processing of removed items) or dead
     for i=#enforcer_bullets, 1, -1 do
         local b = enforcer_bullets[i]
-        if b.x < 0 or b.x > love.graphics.getWidth() or b.y < 0 or b.y > love.graphics.getHeight() or b.dead then
+        if b.x < 0 or b.x > gameWidth or b.y < 0 or b.y > gameHeight or b.dead then
             table.remove(enforcer_bullets, i)
         end
     end

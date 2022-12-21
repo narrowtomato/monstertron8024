@@ -26,7 +26,7 @@ function updateBullets(dt)
     -- Despawn bullet when offscreen (reverse loop to avoid processing of removed items) or dead
     for i=#bullets, 1, -1 do
         local b = bullets[i]
-        if b.x < 0 or b.x > love.graphics.getWidth() or b.y < 0 or b.y > love.graphics.getHeight() or b.dead then
+        if b.x < 0 or b.x > gameWidth or b.y < 0 or b.y > gameHeight or b.dead then
             table.remove(bullets, i)
         end
     end
