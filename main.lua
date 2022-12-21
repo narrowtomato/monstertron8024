@@ -1,22 +1,30 @@
-push = require('lib/push')
+-- Resolution config
+
+local push = require('lib/push')
 
 love.graphics.setDefaultFilter("nearest", "nearest") --disable blurry scaling
   
-gameWidth, gameHeight = 800, 600
+gameWidth, gameHeight = 600, 600
 
 windowWidth, windowHeight = love.window.getDesktopDimensions()
-windowWidth, windowHeight = windowWidth*.5, windowHeight*.5
+windowWidth, windowHeight = windowWidth*.9, windowHeight*.9
 
 push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {
   fullscreen = false,
   resizable = true,
   pixelperfect = true
 })
-push:setBorderColor{0, 1, 0} --default value
+push:setBorderColor{0, 0.2, 0} --default value
 
 function love.resize(w, h)
     push:resize(w, h)
 end
+
+-- Animation library
+
+local anim8 = require 'lib/anim8-master/anim8'
+
+local image, animation
 
 function love.load()
     -- Make sure numbers are truly random
@@ -75,6 +83,10 @@ function love.load()
     -- Current Wave and total waves
     current_wave = 0
     total_waves = 21
+
+    -- Animations and Images
+    -- local player_anim_grid = anim8.newGrid(32, 32, player_image:getWidth(), player_image:getHeight())
+    -- player_animation = anim8.newAnimation(player_anim_grid(1, 1), 1)
 end
 
 function love.update(dt)

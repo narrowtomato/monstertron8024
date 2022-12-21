@@ -1,5 +1,5 @@
 player = {
-    color = {1, 1, 0},
+    color = {1, 1, 1},
     speed=200, 
     x=gameWidth / 2, 
     y=gameHeight / 2, 
@@ -8,30 +8,40 @@ player = {
     total_humans_rescued = 0,
     score = 0,
     lives = 3,
-    death_timer = 0
+    death_timer = 0,
+    image = love.graphics.newImage('sprites/topy_sheet.png')
 }
+
+player.quad = love.graphics.newQuad(0, 0, 32, 32, player.image)
+-- player.up_quad = love.graphics.newQuad(32, 0, 32, 32, player.image)
+-- player.left_quad = love.graphics.newQuad(64, 0, 32, 32, player.image)
+-- player.right_quad = love.graphics.newQuad(96, 0, 32, 32, player.image)
 
 function player:update(dt)
     if gameState == 2 then
         -- Player Movement
         if love.keyboard.isDown("d") and self.x < gameWidth - 5 then
             self.x = self.x + self.speed * dt
+            player.quad = love.graphics.newQuad(96, 0, 32, 32, player.image)
         end
         if love.keyboard.isDown("a") and self.x > 5 then
             self.x = self.x - self.speed * dt
+            player.quad = love.graphics.newQuad(64, 0, 32, 32, player.image)
         end
         if love.keyboard.isDown("w") and self.y > 5 then
             self.y = self.y - self.speed * dt
+            player.quad = love.graphics.newQuad(32, 0, 32, 32, player.image)
         end
         if love.keyboard.isDown("s") and self.y < gameHeight - 5 then
             self.y = self.y + self.speed * dt
+            player.quad = love.graphics.newQuad(0, 0, 32, 32, player.image)
         end
     end
 end
 
 function player:draw()
     love.graphics.setColor(self.color[1], self.color[2], self.color[3])
-    love.graphics.circle("fill", self.x, self.y, self.radius)
+    love.graphics.draw(player.image, player.quad, self.x - 16, self.y - 16)
 end
 
 function playerDeath()
