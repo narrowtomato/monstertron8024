@@ -1,4 +1,4 @@
-push = require('push')
+push = require('lib/push')
 
 love.graphics.setDefaultFilter("nearest", "nearest") --disable blurry scaling
   
