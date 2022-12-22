@@ -86,11 +86,27 @@ function love.load()
     skel_image = love.graphics.newImage('sprites/skel.png')
     local skel_anim_grid = anim8.newGrid(32, 32, skel_image:getWidth(), skel_image:getHeight())
     skel_animation = anim8.newAnimation(skel_anim_grid('1-4', 1), 0.1)
+
+    fireball_image = love.graphics.newImage('sprites/fireball.png')
+    local fireball_anim_grid = anim8.newGrid(32, 32, fireball_image:getWidth(), fireball_image:getHeight())
+    fireball_animation = anim8.newAnimation(fireball_anim_grid('1-3', 1), 0.1)
+
+    zambie_image = love.graphics.newImage('sprites/zambie.png')
+    local zambie_anim_grid = anim8.newGrid(36, 36, zambie_image:getWidth(), zambie_image:getHeight())
+    zambie_animation_down = anim8.newAnimation(zambie_anim_grid('1-2', 1), 0.5)
+    zambie_animation_up = anim8.newAnimation(zambie_anim_grid('3-4', 1), 0.5)
+    zambie_animation_left = anim8.newAnimation(zambie_anim_grid('5-6', 1), 0.5)
+    zambie_animation_right = anim8.newAnimation(zambie_anim_grid('7-8', 1), 0.5)
 end
 
 function love.update(dt)
     -- Update animations
     skel_animation:update(dt)
+    fireball_animation:update(dt)
+    zambie_animation_down:update(dt)
+    zambie_animation_up:update(dt)
+    zambie_animation_left:update(dt)
+    zambie_animation_right:update(dt)
 
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
@@ -419,13 +435,27 @@ function love.draw()
             if t.type == "score_blip" then 
                 love.graphics.print(t.text, t.x, t.y)
             else
-                if t.type == "hulk" or t.type == "prog" or t.type == "tank" then
+                if t.type == "prog" or t.type == "tank" then
                     love.graphics.rectangle("fill", t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2)
+                elseif t.type == "hulk" then
+                    if t.direction == 3 * math.pi / 2 then 
+                        zambie_animation_up:draw(zambie_image, t.x - 18, t.y - 18)
+                    elseif t.direction == math.pi / 2 then 
+                        zambie_animation_down:draw(zambie_image, t.x - 18, t.y - 18)
+                    elseif t.direction == math.pi then 
+                        zambie_animation_left:draw(zambie_image, t.x - 18, t.y - 18)
+                    else
+                        zambie_animation_right:draw(zambie_image, t.x - 18, t.y - 18)
+                    end
                 elseif t.type == "spheroid" then 
                     love.graphics.circle("line", t.x, t.y, t.ring1_radius)
                     love.graphics.circle("line", t.x, t.y, t.ring2_radius)
                 elseif t.type == "grunt" then 
+                    love.graphics.setColor(1, 1, 1)
                     skel_animation:draw(skel_image, t.x - 16, t.y - 16)
+                elseif t.type == "hazard" then
+                    love.graphics.setColor(1, 1, 1)
+                    fireball_animation:draw(fireball_image, t.x - 16, t.y - 16)
                 else
                     love.graphics.circle("fill", t.x, t.y, t.radius)
                 end
@@ -496,7 +526,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
         local temp_x, temp_y = getPointsAwayFromPlayer()
         local hulk = {
             type = "hulk",
-            color = {31/255, 255/255, 120/255},
+            color = {1, 1, 1},
             x = temp_x,
             y = temp_y,
             radius = 15,
