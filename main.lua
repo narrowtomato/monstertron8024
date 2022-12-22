@@ -7,12 +7,12 @@ love.graphics.setDefaultFilter("nearest", "nearest") --disable blurry scaling
 gameWidth, gameHeight = 600, 600
 
 windowWidth, windowHeight = love.window.getDesktopDimensions()
-windowWidth, windowHeight = windowWidth*.9, windowHeight*.9
+windowWidth, windowHeight = windowWidth*.8, windowHeight*.8
 
 push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {
   fullscreen = false,
   resizable = true,
-  pixelperfect = true
+  pixelperfect = false
 })
 push:setBorderColor{0, 0.2, 0} --default value
 
