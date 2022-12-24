@@ -118,6 +118,10 @@ function love.load()
     ufo_image = love.graphics.newImage('sprites/ufo.png')
     local ufo_anim_grid = anim8.newGrid(36, 36, ufo_image:getWidth(), ufo_image:getHeight())
     ufo_animation = anim8.newAnimation(ufo_anim_grid('1-3', 1), 0.2)
+
+    tank_image = love.graphics.newImage('sprites/tank.png')
+    local tank_anim_grid = anim8.newGrid(36, 36, tank_image:getWidth(), tank_image:getHeight())
+    tank_animation = anim8.newAnimation(tank_anim_grid('1-8', 1), 0.2)
 end
 
 function love.update(dt)
@@ -134,6 +138,7 @@ function love.update(dt)
     brain_animation:update(dt)
     prog_animation:update(dt)
     ufo_animation:update(dt)
+    tank_animation:update(dt)
 
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
@@ -463,7 +468,8 @@ function love.draw()
                 love.graphics.print(t.text, t.x, t.y)
             else
                 if t.type == "tank" then
-                    love.graphics.rectangle("fill", t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2)
+                    love.graphics.setColor(1, 1, 1)
+                    tank_animation:draw(tank_image, t.x - 18, t.y - 18)
                 elseif t.type == "prog" then 
                     love.graphics.setColor(1, 1, 1)
                     prog_animation:draw(prog_image, t.x - 16, t.y - 16)
@@ -689,7 +695,8 @@ function nextWave(restart)
         if current_wave % total_waves == 0 then 
             populateStage(0, 1, 20)
         elseif current_wave % total_waves == 1 then
-            populateStage(10, 30, 5)
+            populateStage(20, 0, 20, 5, 3, 0, 8)
+            -- populateStage(10, 30, 5)
         elseif current_wave % total_waves == 2 then
             populateStage(10, 20, 7, 5, 1)
         elseif current_wave % total_waves == 3 then
