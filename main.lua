@@ -106,6 +106,14 @@ function love.load()
     ghost_image = love.graphics.newImage('sprites/ghost.png')
     local ghost_anim_grid = anim8.newGrid(32, 32, ghost_image:getWidth(), ghost_image:getHeight())
     ghost_animation = anim8.newAnimation(ghost_anim_grid('1-4', 1), 0.1)
+
+    brain_image = love.graphics.newImage('sprites/brain.png')
+    local brain_anim_grid = anim8.newGrid(32, 32, brain_image:getWidth(), brain_image:getHeight())
+    brain_animation = anim8.newAnimation(brain_anim_grid('1-4', 1), 0.1)
+
+    prog_image = love.graphics.newImage('sprites/prog.png')
+    local prog_anim_grid = anim8.newGrid(32, 32, prog_image:getWidth(), prog_image:getHeight())
+    prog_animation = anim8.newAnimation(prog_anim_grid('1-4', 1), 0.1)
 end
 
 function love.update(dt)
@@ -119,6 +127,8 @@ function love.update(dt)
     male_villager_animation:update(dt)
     female_villager_animation:update(dt)
     ghost_animation:update(dt)
+    brain_animation:update(dt)
+    prog_animation:update(dt)
 
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
@@ -447,8 +457,11 @@ function love.draw()
             if t.type == "score_blip" then 
                 love.graphics.print(t.text, t.x, t.y)
             else
-                if t.type == "prog" or t.type == "tank" then
+                if t.type == "tank" then
                     love.graphics.rectangle("fill", t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2)
+                elseif t.type == "prog" then 
+                    love.graphics.setColor(1, 1, 1)
+                    prog_animation:draw(prog_image, t.x - 16, t.y - 16)
                 elseif t.type == "hulk" then
                     if t.direction == 3 * math.pi / 2 then 
                         zambie_animation_up:draw(zambie_image, t.x - 18, t.y - 18)
@@ -478,6 +491,9 @@ function love.draw()
                 elseif t.type == "enforcer" then 
                     love.graphics.setColor(1, 1, 1)
                     ghost_animation:draw(ghost_image, t.x - 16, t.y - 16)
+                elseif t.type == "brain" then
+                    love.graphics.setColor(1, 1, 1)
+                    ghost_animation:draw(brain_image, t.x - 16, t.y - 16)
                 else
                     love.graphics.circle("fill", t.x, t.y, t.radius)
                 end
