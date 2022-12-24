@@ -97,6 +97,15 @@ function love.load()
     zambie_animation_up = anim8.newAnimation(zambie_anim_grid('3-4', 1), 0.5)
     zambie_animation_left = anim8.newAnimation(zambie_anim_grid('5-6', 1), 0.5)
     zambie_animation_right = anim8.newAnimation(zambie_anim_grid('7-8', 1), 0.5)
+
+    villager_image = love.graphics.newImage('sprites/villagers.png')
+    local villagers_anim_grid = anim8.newGrid(32, 32, villager_image:getWidth(), villager_image:getHeight())
+    male_villager_animation = anim8.newAnimation(villagers_anim_grid('1-4', 1), 0.1)
+    female_villager_animation = anim8.newAnimation(villagers_anim_grid('1-4', 2), 0.1)
+
+    ghost_image = love.graphics.newImage('sprites/ghost.png')
+    local ghost_anim_grid = anim8.newGrid(32, 32, ghost_image:getWidth(), ghost_image:getHeight())
+    ghost_animation = anim8.newAnimation(ghost_anim_grid('1-4', 1), 0.1)
 end
 
 function love.update(dt)
@@ -107,6 +116,9 @@ function love.update(dt)
     zambie_animation_up:update(dt)
     zambie_animation_left:update(dt)
     zambie_animation_right:update(dt)
+    male_villager_animation:update(dt)
+    female_villager_animation:update(dt)
+    ghost_animation:update(dt)
 
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
@@ -456,6 +468,16 @@ function love.draw()
                 elseif t.type == "hazard" then
                     love.graphics.setColor(1, 1, 1)
                     fireball_animation:draw(fireball_image, t.x - 16, t.y - 16)
+                elseif t.type == "human" then
+                    love.graphics.setColor(1, 1, 1)
+                    if t.gender == "male" then 
+                        male_villager_animation:draw(villager_image, t.x - 16, t.y - 16)
+                    elseif t.gender == "female" then
+                        female_villager_animation:draw(villager_image, t.x - 16, t.y - 16)
+                    end
+                elseif t.type == "enforcer" then 
+                    love.graphics.setColor(1, 1, 1)
+                    ghost_animation:draw(ghost_image, t.x - 16, t.y - 16)
                 else
                     love.graphics.circle("fill", t.x, t.y, t.radius)
                 end
@@ -507,9 +529,12 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
     end
     -- Create Humans
     for i = num_humans, 1, -1 do 
+        local g = love.math.random(1, 2)
+        if g == 1 then g = "male" else g = "female" end
         local human = {
             type = "human",
-            color = {0, 0, 1},
+            gender = g,
+            color = {0, 1, 1},
             x = love.math.random(0, gameWidth),
             y = love.math.random(0, gameHeight),
             radius = 10,
