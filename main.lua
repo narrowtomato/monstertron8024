@@ -114,6 +114,10 @@ function love.load()
     prog_image = love.graphics.newImage('sprites/prog.png')
     local prog_anim_grid = anim8.newGrid(32, 32, prog_image:getWidth(), prog_image:getHeight())
     prog_animation = anim8.newAnimation(prog_anim_grid('1-4', 1), 0.1)
+
+    ufo_image = love.graphics.newImage('sprites/ufo.png')
+    local ufo_anim_grid = anim8.newGrid(36, 36, ufo_image:getWidth(), ufo_image:getHeight())
+    ufo_animation = anim8.newAnimation(ufo_anim_grid('1-3', 1), 0.2)
 end
 
 function love.update(dt)
@@ -129,6 +133,7 @@ function love.update(dt)
     ghost_animation:update(dt)
     brain_animation:update(dt)
     prog_animation:update(dt)
+    ufo_animation:update(dt)
 
     if gameState == MENU then 
         if love.keyboard.isDown("space") then
@@ -493,7 +498,10 @@ function love.draw()
                     ghost_animation:draw(ghost_image, t.x - 16, t.y - 16)
                 elseif t.type == "brain" then
                     love.graphics.setColor(1, 1, 1)
-                    ghost_animation:draw(brain_image, t.x - 16, t.y - 16)
+                    brain_animation:draw(brain_image, t.x - 16, t.y - 16)
+                elseif t.type == "quark" then 
+                    love.graphics.setColor(1, 1, 1)
+                    ufo_animation:draw(ufo_image, t.x - 18, t.y - 18)
                 else
                     love.graphics.circle("fill", t.x, t.y, t.radius)
                 end
