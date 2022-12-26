@@ -36,6 +36,7 @@ function love.load()
     RUNNING = 2
     SPAWNING = 3
     DEATH = 4
+    TUTORIAL = 5
     gameState = MENU
 
     -- All things on the stage other than player and bullets
@@ -156,11 +157,15 @@ function love.update(dt)
     if gameState == MENU then 
         title_animation:update(dt)
         if love.keyboard.isDown("space") then
-            gameState = RUNNING
+            gameState = TUTORIAL
             player.score = 0
             player.lives = 3
             player.total_humans_rescued = 0
             current_wave = 0
+        end
+    elseif gameState == TUTORIAL then
+        if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") then
+            gameState = RUNNING
             nextWave()
         end
     elseif gameState == RUNNING then 
@@ -458,6 +463,17 @@ function love.draw()
         love.graphics.setColor(1, 1, 1)
         title_animation:draw(title_image, gameWidth / 2 - 256, 64, nil, 2)
         love.graphics.printf("Press Space to Begin!", 0, 300, gameWidth, "center")
+    elseif gameState == TUTORIAL then
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf("You Are The Priest:", 0, 50, gameWidth, "center")
+        love.graphics.draw(player.image, player.quad, gameWidth / 2 - 16, 100)
+        love.graphics.printf("WASD or Left Stick Moves", 0, 150, gameWidth, "center")
+        love.graphics.printf("Arrow Keys or Right Stick Shoots", 0, 200, gameWidth, "center")
+        love.graphics.printf("Rescue These:", 0, 250, gameWidth, "center")
+        male_villager_animation:draw(villager_image, gameWidth / 2 - 16 - 32, 300)
+        female_villager_animation:draw(villager_image, gameWidth / 2 - 16 + 32, 300)
+        love.graphics.printf("Shoot Everything Else", 0, 350, gameWidth, "center")
+        love.graphics.printf("Press Space to Begin!", 0, 400, gameWidth, "center")
     elseif gameState == RUNNING or gameState == DEATH then
         -- Draw player if not in death state 
         if gameState == RUNNING then
