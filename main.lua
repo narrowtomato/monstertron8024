@@ -127,6 +127,10 @@ function love.load()
     local shell_anim_grid = anim8.newGrid(26, 26, shell_image:getWidth(), shell_image:getHeight())
     shell_animation = anim8.newAnimation(shell_anim_grid('1-4', 1), 0.1)
 
+    title_image = love.graphics.newImage('sprites/title.png')
+    local title_anim_grid = anim8.newGrid(256, 64, title_image:getWidth(), title_image:getHeight())
+    title_animation = anim8.newAnimation(title_anim_grid(1, '1-4'), 0.1)
+
     -- Font
     font = love.graphics.newFont("fonts/VCR_OSD_MONO.ttf", 20)
     love.graphics.setFont(font)
@@ -150,6 +154,7 @@ function love.update(dt)
     shell_animation:update(dt)
 
     if gameState == MENU then 
+        title_animation:update(dt)
         if love.keyboard.isDown("space") then
             gameState = RUNNING
             player.score = 0
@@ -451,7 +456,8 @@ function love.draw()
     love.graphics.rectangle("fill", 0,0, gameWidth,gameHeight)
     if gameState == MENU then
         love.graphics.setColor(1, 1, 1)
-        love.graphics.printf("Press Space to Begin!", 0, 50, gameWidth, "center")
+        title_animation:draw(title_image, gameWidth / 2 - 256, 64, nil, 2)
+        love.graphics.printf("Press Space to Begin!", 0, 300, gameWidth, "center")
     elseif gameState == RUNNING or gameState == DEATH then
         -- Draw player if not in death state 
         if gameState == RUNNING then
