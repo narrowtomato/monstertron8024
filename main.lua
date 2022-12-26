@@ -126,6 +126,10 @@ function love.load()
     shell_image = love.graphics.newImage('sprites/shell.png')
     local shell_anim_grid = anim8.newGrid(26, 26, shell_image:getWidth(), shell_image:getHeight())
     shell_animation = anim8.newAnimation(shell_anim_grid('1-4', 1), 0.1)
+
+    -- Font
+    font = love.graphics.newFont("fonts/VCR_OSD_MONO.ttf", 20)
+    love.graphics.setFont(font)
 end
 
 function love.update(dt)
@@ -630,7 +634,7 @@ function populateStage(num_hazards, num_grunts, num_humans, num_hulks, num_spher
             color = {180/255, 51/255, 255/255},
             x = temp_x,
             y = temp_y,
-            radius = 10,
+            radius = 12,
             speed = 20,
             direction = getRandomCardinalDirection(),
             change_dir_timer = love.math.random(0, BRAIN_MAX_CHANGE_DIR_TIMER),
