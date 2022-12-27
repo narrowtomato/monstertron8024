@@ -60,6 +60,27 @@ function love.load()
     -- Tank Code
     require('tank')
 
+    -- Load High Scores File
+    local saveData = require("lib/saveData")
+    if love.filesystem.getInfo("highscores") then
+        local highscores = saveData.load("highscores")
+        print(tprint(highscores))
+    else
+        highscores = {
+            {name="Jimmy",score=10000},
+            {name="Jerry",score=9000},
+            {name="Velma",score=8000},
+            {name="Freddie",score=7000},
+            {name="Jason",score=6000},
+            {name="Bobby",score=5000},
+            {name="Phillip",score=4000},
+            {name="Sally",score=3000},
+            {name="Sue",score=2000},
+            {name="Todd",score=1000}
+        }
+        saveData.save(highscores, "highscores")
+    end
+
     -- Max timers for direction changes
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
     HULK_MAX_CHANGE_DIR_TIMER = 4
@@ -877,3 +898,30 @@ function spawnEnforcer(temp_x, temp_y)
     }
     table.insert(things, enforcer)
 end
+
+-- Function that returns printable tables, used for debugging
+function tprint (tbl, indent)
+    if not indent then indent = 0 end
+    local toprint = string.rep(" ", indent) .. "{\r\n"
+    indent = indent + 2 
+    for k, v in pairs(tbl) do
+      toprint = toprint .. string.rep(" ", indent)
+      if (type(k) == "number") then
+        toprint = toprint .. "[" .. k .. "] = "
+      elseif (type(k) == "string") then
+        toprint = toprint  .. k ..  "= "   
+      end
+      if (type(v) == "number") then
+        toprint = toprint .. v .. ",\r\n"
+      elseif (type(v) == "string") then
+        toprint = toprint .. "\"" .. v .. "\",\r\n"
+      elseif (type(v) == "table") then
+        toprint = toprint .. tprint(v, indent + 2) .. ",\r\n"
+      else
+        toprint = toprint .. "\"" .. tostring(v) .. "\",\r\n"
+      end
+    end
+    toprint = toprint .. string.rep(" ", indent-2) .. "}"
+    return toprint
+  end
+  
