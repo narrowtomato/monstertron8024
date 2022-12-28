@@ -94,6 +94,10 @@ function love.load()
     -- enable key repeat so backspace can be held down to trigger love.keypressed multiple times.
     love.keyboard.setKeyRepeat(true)
 
+    -- Flashing text timer
+    flashing_text_timer = 0.5
+    flashing_text_is_on = true
+
     -- Max timers for direction changes
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
     HULK_MAX_CHANGE_DIR_TIMER = 4
@@ -197,10 +201,20 @@ function love.update(dt)
             player.total_humans_rescued = 0
             current_wave = 0
         end
+        flashing_text_timer = flashing_text_timer - dt
+        if flashing_text_timer < 0 then
+            flashing_text_timer = 0.5
+            flashing_text_is_on = not flashing_text_is_on
+        end
     elseif gameState == TUTORIAL then
         if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") then
             gameState = RUNNING
             nextWave()
+        end
+        flashing_text_timer = flashing_text_timer - dt
+        if flashing_text_timer < 0 then
+            flashing_text_timer = 0.5
+            flashing_text_is_on = not flashing_text_is_on
         end
     elseif gameState == HIGHSCORE then
         -- Listen for Enter key to be pressed to move back to Menu with the new highscore
@@ -520,7 +534,9 @@ function love.draw()
     if gameState == MENU then
         love.graphics.setColor(1, 1, 1)
         title_animation:draw(title_image, gameWidth / 2 - 256, 64, nil, 2)
-        love.graphics.printf("Press Space to Begin!", 0, 250, gameWidth, "center")
+        if flashing_text_is_on then
+            love.graphics.printf("Press Space to Begin!", 0, 250, gameWidth, "center")
+        end
         love.graphics.printf("Top Players:", 0, 330, gameWidth, "center")
         love.graphics.printf(highscores_string, 0, 370, gameWidth, "center")
     elseif gameState == TUTORIAL then
@@ -533,7 +549,9 @@ function love.draw()
         male_villager_animation:draw(villager_image, gameWidth / 2 - 16 - 32, 300)
         female_villager_animation:draw(villager_image, gameWidth / 2 - 16 + 32, 300)
         love.graphics.printf("Shoot Everything Else", 0, 350, gameWidth, "center")
-        love.graphics.printf("Shoot to Begin!", 0, 400, gameWidth, "center")
+        if flashing_text_is_on then
+            love.graphics.printf("Shoot to Begin!", 0, 400, gameWidth, "center")
+        end
     elseif gameState == HIGHSCORE then
         love.graphics.setColor(1, 1, 1) 
         love.graphics.printf("You got a High Score!!!\nEnter your name:", 0, 250, gameWidth, "center")
