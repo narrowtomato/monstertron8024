@@ -63,8 +63,7 @@ function love.load()
     -- Load High Scores File
     local saveData = require("lib/saveData")
     if love.filesystem.getInfo("highscores") then
-        local highscores = saveData.load("highscores")
-        print(tprint(highscores))
+        highscores = saveData.load("highscores")
     else
         highscores = {
             {name="Jimmy",score=10000},
@@ -80,6 +79,14 @@ function love.load()
         }
         saveData.save(highscores, "highscores")
     end
+
+    -- Build highscores string
+    highscores_string = ""
+    for i=1, #highscores, 1 do
+        highscores_string = highscores_string .. highscores[i].name .. "\t\t" .. highscores[i].score .. "\n"
+    end
+
+    print(highscores_string)
 
     -- Max timers for direction changes
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
@@ -483,7 +490,9 @@ function love.draw()
     if gameState == MENU then
         love.graphics.setColor(1, 1, 1)
         title_animation:draw(title_image, gameWidth / 2 - 256, 64, nil, 2)
-        love.graphics.printf("Press Space to Begin!", 0, 300, gameWidth, "center")
+        love.graphics.printf("Press Space to Begin!", 0, 250, gameWidth, "center")
+        love.graphics.printf("Top Players:", 0, 330, gameWidth, "center")
+        love.graphics.printf(highscores_string, 0, 370, gameWidth, "center")
     elseif gameState == TUTORIAL then
         love.graphics.setColor(1, 1, 1)
         love.graphics.printf("You Are The Priest:", 0, 50, gameWidth, "center")
@@ -494,7 +503,7 @@ function love.draw()
         male_villager_animation:draw(villager_image, gameWidth / 2 - 16 - 32, 300)
         female_villager_animation:draw(villager_image, gameWidth / 2 - 16 + 32, 300)
         love.graphics.printf("Shoot Everything Else", 0, 350, gameWidth, "center")
-        love.graphics.printf("Press Space to Begin!", 0, 400, gameWidth, "center")
+        love.graphics.printf("Shoot to Begin!", 0, 400, gameWidth, "center")
     elseif gameState == RUNNING or gameState == DEATH then
         -- Draw player if not in death state 
         if gameState == RUNNING then
