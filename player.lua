@@ -13,26 +13,23 @@ player = {
 }
 
 player.quad = love.graphics.newQuad(0, 0, 32, 32, player.image)
--- player.up_quad = love.graphics.newQuad(32, 0, 32, 32, player.image)
--- player.left_quad = love.graphics.newQuad(64, 0, 32, 32, player.image)
--- player.right_quad = love.graphics.newQuad(96, 0, 32, 32, player.image)
 
 function player:update(dt)
     if gameState == 2 then
         -- Player Movement
-        if love.keyboard.isDown("d") and self.x < gameWidth - 5 then
+        if (love.keyboard.isDown("d") or joystick:isGamepadDown("dpright") or left_stick_direction == "right" or left_stick_direction == "down_right" or left_stick_direction == "up_right") and self.x < gameWidth - 5 then
             self.x = self.x + self.speed * dt
             player.quad = love.graphics.newQuad(96, 0, 32, 32, player.image)
         end
-        if love.keyboard.isDown("a") and self.x > 5 then
+        if (love.keyboard.isDown("a") or joystick:isGamepadDown("dpleft") or left_stick_direction == "left" or left_stick_direction == "down_left" or left_stick_direction == "up_left") and self.x > 5 then
             self.x = self.x - self.speed * dt
             player.quad = love.graphics.newQuad(64, 0, 32, 32, player.image)
         end
-        if love.keyboard.isDown("w") and self.y > 5 then
+        if (love.keyboard.isDown("w") or joystick:isGamepadDown("dpup") or left_stick_direction == "up" or left_stick_direction == "up_left" or left_stick_direction == "up_right") and self.y > 5 then
             self.y = self.y - self.speed * dt
             player.quad = love.graphics.newQuad(32, 0, 32, 32, player.image)
         end
-        if love.keyboard.isDown("s") and self.y < gameHeight - 5 then
+        if (love.keyboard.isDown("s") or joystick:isGamepadDown("dpdown") or left_stick_direction == "down" or left_stick_direction == "down_left" or left_stick_direction == "down_right") and self.y < gameHeight - 5 then
             self.y = self.y + self.speed * dt
             player.quad = love.graphics.newQuad(0, 0, 32, 32, player.image)
         end

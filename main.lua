@@ -173,9 +173,64 @@ function love.load()
     -- Font
     font = love.graphics.newFont("fonts/VCR_OSD_MONO.ttf", 20)
     love.graphics.setFont(font)
+
+    -- Joystick setup
+    joysticks = love.joystick.getJoysticks()
+    joystick = joysticks[1]
+    print(joystick)
+    left_stick_direction = "neutral"
+    right_stick_direction = "neutral"
 end
 
 function love.update(dt)
+
+    -- Determine joystick directions
+    if joystick then
+        -- Left Stick
+        local left_stick_angle = math.atan2( joystick:getGamepadAxis("lefty") - 0, joystick:getGamepadAxis("leftx") - 0)
+        if math.abs(joystick:getGamepadAxis("lefty")) < 0.2 and math.abs(joystick:getGamepadAxis("leftx")) < 0.2 then
+            left_stick_direction = "neutral"
+        elseif left_stick_angle >= math.pi / 8 and left_stick_angle < 3 * math.pi / 8 then
+            left_stick_direction = "down_right"
+        elseif left_stick_angle >= 3 * math.pi / 8 and left_stick_angle < 5 * math.pi / 8 then
+            left_stick_direction = "down"
+        elseif left_stick_angle >= 5 * math.pi / 8 and left_stick_angle < 7 * math.pi / 8 then
+            left_stick_direction = "down_left"
+        elseif left_stick_angle <= -1 * math.pi / 8 and left_stick_angle > -3 * math.pi / 8 then
+            left_stick_direction = "up_right"
+        elseif left_stick_angle <= -3 * math.pi / 8 and left_stick_angle > -5 * math.pi / 8 then
+            left_stick_direction = "up"
+        elseif left_stick_angle <= -5 * math.pi / 8 and left_stick_angle > -7 * math.pi / 8 then
+            left_stick_direction = "up_left"
+        elseif left_stick_angle < math.pi / 8 and left_stick_angle > -1 * math.pi / 8 then
+            left_stick_direction = "right"
+        else
+            left_stick_direction = "left"
+        end
+        -- Right Stick
+        local right_stick_angle = math.atan2( joystick:getGamepadAxis("righty") - 0, joystick:getGamepadAxis("rightx") - 0)
+        if math.abs(joystick:getGamepadAxis("righty")) < 0.2 and math.abs(joystick:getGamepadAxis("rightx")) < 0.2 then
+            right_stick_direction = "neutral"
+        elseif right_stick_angle >= math.pi / 8 and right_stick_angle < 3 * math.pi / 8 then
+            right_stick_direction = "down_right"
+        elseif right_stick_angle >= 3 * math.pi / 8 and right_stick_angle < 5 * math.pi / 8 then
+            right_stick_direction = "down"
+        elseif right_stick_angle >= 5 * math.pi / 8 and right_stick_angle < 7 * math.pi / 8 then
+            right_stick_direction = "down_left"
+        elseif right_stick_angle <= -1 * math.pi / 8 and right_stick_angle > -3 * math.pi / 8 then
+            right_stick_direction = "up_right"
+        elseif right_stick_angle <= -3 * math.pi / 8 and right_stick_angle > -5 * math.pi / 8 then
+            right_stick_direction = "up"
+        elseif right_stick_angle <= -5 * math.pi / 8 and right_stick_angle > -7 * math.pi / 8 then
+            right_stick_direction = "up_left"
+        elseif right_stick_angle < math.pi / 8 and right_stick_angle > -1 * math.pi / 8 then
+            right_stick_direction = "right"
+        else
+            right_stick_direction = "left"
+        end
+    end
+    print(right_stick_direction)
+
     -- Update animations
     skel_animation:update(dt)
     fireball_animation:update(dt)
@@ -194,7 +249,7 @@ function love.update(dt)
 
     if gameState == MENU then 
         title_animation:update(dt)
-        if love.keyboard.isDown("space") then
+        if love.keyboard.isDown("space") or (joystick and joystick:isGamepadDown("start")) then
             gameState = TUTORIAL
             player.score = 0
             player.lives = 3
@@ -207,7 +262,7 @@ function love.update(dt)
             flashing_text_is_on = not flashing_text_is_on
         end
     elseif gameState == TUTORIAL then
-        if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") then
+        if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") or (joystick and (joystick:isGamepadDown("a") or joystick:isGamepadDown("b") or joystick:isGamepadDown("x") or joystick:isGamepadDown("y") or right_stick_direction ~= "neutral")) then
             gameState = RUNNING
             nextWave()
         end
@@ -535,7 +590,7 @@ function love.draw()
         love.graphics.setColor(1, 1, 1)
         title_animation:draw(title_image, gameWidth / 2 - 256, 64, nil, 2)
         if flashing_text_is_on then
-            love.graphics.printf("Press Space to Begin!", 0, 250, gameWidth, "center")
+            love.graphics.printf("Press Space/Start to Begin!", 0, 250, gameWidth, "center")
         end
         love.graphics.printf("Top Players:", 0, 330, gameWidth, "center")
         love.graphics.printf(highscores_string, 0, 370, gameWidth, "center")
@@ -543,8 +598,8 @@ function love.draw()
         love.graphics.setColor(1, 1, 1)
         love.graphics.printf("You Are The Priest:", 0, 50, gameWidth, "center")
         love.graphics.draw(player.image, player.quad, gameWidth / 2 - 16, 100)
-        love.graphics.printf("WASD or Left Stick Moves", 0, 150, gameWidth, "center")
-        love.graphics.printf("Arrow Keys or Right Stick Shoots", 0, 200, gameWidth, "center")
+        love.graphics.printf("WASD or Left Stick or D-pad Moves", 0, 150, gameWidth, "center")
+        love.graphics.printf("Arrow Keys or Right Stick or x/y/a/b Buttons Shoot", 0, 200, gameWidth, "center")
         love.graphics.printf("Rescue These:", 0, 250, gameWidth, "center")
         male_villager_animation:draw(villager_image, gameWidth / 2 - 16 - 32, 300)
         female_villager_animation:draw(villager_image, gameWidth / 2 - 16 + 32, 300)
@@ -1007,4 +1062,8 @@ function love.textinput(t)
     if gameState == HIGHSCORE then
         highscore_name_input = highscore_name_input .. t
     end
+end
+
+function love.gamepadpressed(joystick, button)
+    lastbutton = button
 end

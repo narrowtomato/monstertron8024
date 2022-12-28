@@ -5,7 +5,7 @@ BULLET_SPEED = 500
 
 function updateBullets(dt)
     -- Player Shooting 
-    if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") then
+    if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") or (joystick and (joystick:isGamepadDown("a") or joystick:isGamepadDown("b") or joystick:isGamepadDown("x") or joystick:isGamepadDown("y") or right_stick_direction ~= "neutral")) then
         -- Spawn bullet on timer to repeat firing
         if bullet_timer <= 0 then
             spawnBullet()
@@ -44,21 +44,21 @@ end
 function spawnBullet()
     local temp_dir = math.pi
     -- Determine direction based on which keys are held down
-    if love.keyboard.isDown("left") and love.keyboard.isDown("down") then 
+    if love.keyboard.isDown("left") and love.keyboard.isDown("down") or (joystick and (joystick:isGamepadDown("x") and joystick:isGamepadDown("a")) or right_stick_direction == "down_left") then 
         temp_dir = (3 * math.pi) / 4
-    elseif love.keyboard.isDown("left") and love.keyboard.isDown("up") then 
+    elseif love.keyboard.isDown("left") and love.keyboard.isDown("up") or (joystick and (joystick:isGamepadDown("x") and joystick:isGamepadDown("y")) or right_stick_direction == "up_left") then 
         temp_dir = (5 * math.pi) / 4
-    elseif love.keyboard.isDown("right") and love.keyboard.isDown("down") then 
+    elseif love.keyboard.isDown("right") and love.keyboard.isDown("down") or (joystick and (joystick:isGamepadDown("b") and joystick:isGamepadDown("a")) or right_stick_direction == "down_right") then 
         temp_dir = math.pi / 4
-    elseif love.keyboard.isDown("right") and love.keyboard.isDown("up") then 
+    elseif love.keyboard.isDown("right") and love.keyboard.isDown("up") or (joystick and (joystick:isGamepadDown("b") and joystick:isGamepadDown("y")) or right_stick_direction == "up_right") then 
         temp_dir = (7 * math.pi) / 4
-    elseif love.keyboard.isDown("left") then 
+    elseif love.keyboard.isDown("left") or (joystick and (joystick:isGamepadDown("x")) or right_stick_direction == "left") then 
         temp_dir = math.pi
-    elseif love.keyboard.isDown("right") then 
+    elseif love.keyboard.isDown("right") or (joystick and (joystick:isGamepadDown("b")) or right_stick_direction == "right") then 
         temp_dir = 0
-    elseif love.keyboard.isDown("up")  then
+    elseif love.keyboard.isDown("up") or (joystick and (joystick:isGamepadDown("y")) or right_stick_direction == "up")  then
         temp_dir = math.pi + (math.pi / 2)
-    elseif love.keyboard.isDown("down") then 
+    elseif love.keyboard.isDown("down") or (joystick and (joystick:isGamepadDown("a")) or right_stick_direction == "down") then 
         temp_dir = math.pi / 2
     end
     -- Build bullet
