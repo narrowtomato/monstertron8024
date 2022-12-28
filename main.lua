@@ -21,8 +21,10 @@ function love.resize(w, h)
 end
 
 -- Animation library
-
 local anim8 = require 'lib/anim8-master/anim8'
+
+-- Require UTF-8 for text input
+local utf8 = require("utf8")
 
 function love.load()
     -- Make sure numbers are truly random
@@ -37,6 +39,7 @@ function love.load()
     SPAWNING = 3
     DEATH = 4
     TUTORIAL = 5
+    HIGHSCORE = 6
     gameState = MENU
 
     -- All things on the stage other than player and bullets
@@ -61,7 +64,7 @@ function love.load()
     require('tank')
 
     -- Load High Scores File
-    local saveData = require("lib/saveData")
+    saveData = require("lib/saveData")
     if love.filesystem.getInfo("highscores") then
         highscores = saveData.load("highscores")
     else
@@ -86,7 +89,10 @@ function love.load()
         highscores_string = highscores_string .. highscores[i].name .. "\t\t" .. highscores[i].score .. "\n"
     end
 
-    print(highscores_string)
+    -- Input string for highscore name
+    highscore_name_input = ""
+    -- enable key repeat so backspace can be held down to trigger love.keypressed multiple times.
+    love.keyboard.setKeyRepeat(true)
 
     -- Max timers for direction changes
     HUMAN_MAX_CHANGE_DIR_TIMER = 2
@@ -195,6 +201,30 @@ function love.update(dt)
         if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("up") or love.keyboard.isDown("down") then
             gameState = RUNNING
             nextWave()
+        end
+    elseif gameState == HIGHSCORE then
+        -- Listen for Enter key to be pressed to move back to Menu with the new highscore
+        if love.keyboard.isDown("return") then 
+            for i=1, #highscores, 1 do
+                if player.score > highscores[i].score then 
+                    -- Insert score at current position
+                    table.insert(highscores, i, {
+                        name = highscore_name_input,
+                        score = player.score
+                    })
+                    -- Remove the last score in the table
+                    table.remove(highscores, #highscores)
+                    break
+                end
+            end
+            -- Save highscores
+            saveData.save(highscores, "highscores")
+            -- Build highscores string
+            highscores_string = ""
+            for i=1, #highscores, 1 do
+                highscores_string = highscores_string .. highscores[i].name .. "\t\t" .. highscores[i].score .. "\n"
+            end
+            gameState = MENU 
         end
     elseif gameState == RUNNING then 
         -- Update Player
@@ -504,6 +534,10 @@ function love.draw()
         female_villager_animation:draw(villager_image, gameWidth / 2 - 16 + 32, 300)
         love.graphics.printf("Shoot Everything Else", 0, 350, gameWidth, "center")
         love.graphics.printf("Shoot to Begin!", 0, 400, gameWidth, "center")
+    elseif gameState == HIGHSCORE then
+        love.graphics.setColor(1, 1, 1) 
+        love.graphics.printf("You got a High Score!!!\nEnter your name:", 0, 250, gameWidth, "center")
+        love.graphics.printf(highscore_name_input, 0, 300, gameWidth, "center")
     elseif gameState == RUNNING or gameState == DEATH then
         -- Draw player if not in death state 
         if gameState == RUNNING then
@@ -932,5 +966,27 @@ function tprint (tbl, indent)
     end
     toprint = toprint .. string.rep(" ", indent-2) .. "}"
     return toprint
-  end
+end
   
+-- These two functions allow text input
+function love.keypressed(key)
+    -- Allow text input in the HIGHSCORE state
+    if gameState == HIGHSCORE then
+        if key == "backspace" then
+            -- get the byte offset to the last UTF-8 character in the string.
+            local byteoffset = utf8.offset(highscore_name_input, -1)
+
+            if byteoffset then
+                -- remove the last UTF-8 character.
+                -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
+                highscore_name_input = string.sub(highscore_name_input, 1, byteoffset - 1)
+            end
+        end
+    end
+end
+
+function love.textinput(t)
+    if gameState == HIGHSCORE then
+        highscore_name_input = highscore_name_input .. t
+    end
+end

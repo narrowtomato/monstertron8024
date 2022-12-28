@@ -52,23 +52,12 @@ function playerDeath()
     -- Go back to menu if all lives are lost
     if player.lives == 0 then
         gameState = MENU
-        -- Check and update high scores if necessary
+        -- Check and enter the HIGHSCORE state if necessary
         for i=1, #highscores, 1 do
             if player.score > highscores[i].score then 
-                -- Insert score at current position
-                table.insert(highscores, i, {
-                    name = "TESTNAME",
-                    score = player.score
-                })
-                -- Remove the last score in the table
-                table.remove(highscores, #highscores)
+                gameState = HIGHSCORE
                 break
             end
-        end
-        -- Build highscores string
-        highscores_string = ""
-        for i=1, #highscores, 1 do
-            highscores_string = highscores_string .. highscores[i].name .. "\t\t" .. highscores[i].score .. "\n"
         end
     else
         nextWave(true)
