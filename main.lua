@@ -200,11 +200,26 @@ function love.load()
     sounds.rescue3 = love.audio.newSource("sounds/rescue3.wav", "static")
     sounds.rescue4 = love.audio.newSource("sounds/rescue4.wav", "static")
     sounds.rescue5 = love.audio.newSource("sounds/rescue5.wav", "static")
+    sounds.birth1 = love.audio.newSource("sounds/birth1.wav", "static")
+    sounds.birth2 = love.audio.newSource("sounds/birth2.wav", "static")
+    sounds.birth3 = love.audio.newSource("sounds/birth3.wav", "static")
+    sounds.birth4 = love.audio.newSource("sounds/birth4.wav", "static")
+    sounds.birth5 = love.audio.newSource("sounds/birth5.wav", "static")
     sounds.bonk = love.audio.newSource("sounds/bonk.wav", "static")
+    sounds.convert1 = love.audio.newSource("sounds/convert1.wav", "static")
+    sounds.convert2 = love.audio.newSource("sounds/convert2.wav", "static")
+    sounds.convert3 = love.audio.newSource("sounds/convert3.wav", "static")
+    sounds.convert4 = love.audio.newSource("sounds/convert4.wav", "static")
+    sounds.convert5 = love.audio.newSource("sounds/convert5.wav", "static")
+    sounds.oneup = love.audio.newSource("sounds/oneup.wav", "static")
+    sounds.gameover = love.audio.newSource("sounds/gameover.wav", "static")
+    sounds.highscore = love.audio.newSource("sounds/highscore.wav", "static")
 
     -- Sound Cyclers
     boom_sound_cycler = 1
     rescue_sound_cycler = 1
+    birth_sound_cycler = 1
+    convert_sound_cycler = 1
 end
 
 function love.update(dt)
@@ -457,6 +472,18 @@ function love.update(dt)
                     -- Award a life every 7 humans rescued
                     if player.total_humans_rescued % 7 == 0 then 
                         player.lives = player.lives + 1
+                        -- Play 1up Sound
+                        sounds.oneup:play()
+                    else
+                        -- Play Rescue Sound if not 1up
+                        if rescue_sound_cycler == 6 then rescue_sound_cycler = 1 end
+                        if rescue_sound_cycler == 1 then sounds.rescue1:play()
+                        elseif rescue_sound_cycler == 2 then sounds.rescue2:play()
+                        elseif rescue_sound_cycler == 3 then sounds.rescue3:play()
+                        elseif rescue_sound_cycler == 4 then sounds.rescue4:play()
+                        elseif rescue_sound_cycler == 5 then sounds.rescue5:play()
+                        end
+                        rescue_sound_cycler = rescue_sound_cycler + 1
                     end
                     -- Cap this value at 5 (score additions max out at 5000)
                     if player.humans_rescued_this_wave > 5 then 
@@ -598,15 +625,6 @@ function love.update(dt)
                     elseif boom_sound_cycler == 5 then sounds.boom5:play()
                     end
                     boom_sound_cycler = boom_sound_cycler + 1
-                else 
-                    if rescue_sound_cycler == 6 then rescue_sound_cycler = 1 end
-                    if rescue_sound_cycler == 1 then sounds.rescue1:play()
-                    elseif rescue_sound_cycler == 2 then sounds.rescue2:play()
-                    elseif rescue_sound_cycler == 3 then sounds.rescue3:play()
-                    elseif rescue_sound_cycler == 4 then sounds.rescue4:play()
-                    elseif rescue_sound_cycler == 5 then sounds.rescue5:play()
-                    end
-                    rescue_sound_cycler = rescue_sound_cycler + 1
                 end
                 table.remove(things, i)
             end
@@ -1065,6 +1083,15 @@ function spawnEnforcer(temp_x, temp_y)
         dead = false
     }
     table.insert(things, enforcer)
+    -- Play birth sound
+    if birth_sound_cycler == 6 then birth_sound_cycler = 1 end
+    if birth_sound_cycler == 1 then sounds.birth1:play()
+    elseif birth_sound_cycler == 2 then sounds.birth2:play()
+    elseif birth_sound_cycler == 3 then sounds.birth3:play()
+    elseif birth_sound_cycler == 4 then sounds.birth4:play()
+    elseif birth_sound_cycler == 5 then sounds.birth5:play()
+    end
+    birth_sound_cycler = birth_sound_cycler + 1
 end
 
 -- Function that returns printable tables, used for debugging

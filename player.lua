@@ -53,9 +53,11 @@ function playerDeath()
         for i=1, #highscores, 1 do
             if player.score > highscores[i].score then 
                 gameState = HIGHSCORE
+                sounds.highscore:play()
                 break
             end
         end
+        if gameState ~= HIGHSCORE then sounds.gameover:play() end
     else
         nextWave(true)
     end

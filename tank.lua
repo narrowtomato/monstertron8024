@@ -13,6 +13,15 @@ function spawnTank(temp_x, temp_y)
         dead = false
     }
     table.insert(things, tank)
+    -- Play birth sound
+    if birth_sound_cycler == 6 then birth_sound_cycler = 1 end
+    if birth_sound_cycler == 1 then sounds.birth1:play()
+    elseif birth_sound_cycler == 2 then sounds.birth2:play()
+    elseif birth_sound_cycler == 3 then sounds.birth3:play()
+    elseif birth_sound_cycler == 4 then sounds.birth4:play()
+    elseif birth_sound_cycler == 5 then sounds.birth5:play()
+    end
+    birth_sound_cycler = birth_sound_cycler + 1
 end
 
 function updateTank(tank, dt)
@@ -59,6 +68,15 @@ function spawnShell(tank)
         dead = false
     }
     table.insert(things, shell)
+    -- Play birth sound
+    if birth_sound_cycler == 6 then birth_sound_cycler = 1 end
+    if birth_sound_cycler == 1 then sounds.birth1:play()
+    elseif birth_sound_cycler == 2 then sounds.birth2:play()
+    elseif birth_sound_cycler == 3 then sounds.birth3:play()
+    elseif birth_sound_cycler == 4 then sounds.birth4:play()
+    elseif birth_sound_cycler == 5 then sounds.birth5:play()
+    end
+    birth_sound_cycler = birth_sound_cycler + 1
 end
 
 function updateShell(shell, dt)

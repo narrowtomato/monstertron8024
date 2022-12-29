@@ -36,4 +36,12 @@ function spawnEnforcerBullet(enforcer)
         dead = false
     }
     table.insert(enforcer_bullets, enforcer_bullet)
+    if bullet_sound_cycler == 6 then bullet_sound_cycler = 1 end
+    if bullet_sound_cycler == 1 then sounds.shoot1:play()
+    elseif bullet_sound_cycler == 2 then sounds.shoot2:play()
+    elseif bullet_sound_cycler == 3 then sounds.shoot3:play()
+    elseif bullet_sound_cycler == 4 then sounds.shoot4:play()
+    elseif bullet_sound_cycler == 5 then sounds.shoot5:play()
+    end
+    bullet_sound_cycler = bullet_sound_cycler + 1
 end
