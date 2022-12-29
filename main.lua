@@ -188,6 +188,14 @@ function love.load()
     sounds.shoot3 = love.audio.newSource("sounds/shoot3.wav", "static")
     sounds.shoot4 = love.audio.newSource("sounds/shoot4.wav", "static")
     sounds.shoot5 = love.audio.newSource("sounds/shoot5.wav", "static")
+    sounds.boom1 = love.audio.newSource("sounds/boom1.wav", "static")
+    sounds.boom2 = love.audio.newSource("sounds/boom2.wav", "static")
+    sounds.boom3 = love.audio.newSource("sounds/boom3.wav", "static")
+    sounds.boom4 = love.audio.newSource("sounds/boom4.wav", "static")
+    sounds.boom5 = love.audio.newSource("sounds/boom5.wav", "static")
+
+    -- Sound Cyclers
+    boom_sound_cycler = 1
 end
 
 function love.update(dt)
@@ -566,6 +574,17 @@ function love.update(dt)
         for i=#things, 1, -1 do 
             local t = things[i]
             if t.dead then 
+                -- Play boom sounds if not human
+                if things[i].type ~= "human" then
+                    if boom_sound_cycler == 6 then boom_sound_cycler = 1 end
+                    if boom_sound_cycler == 1 then sounds.boom1:play()
+                    elseif boom_sound_cycler == 2 then sounds.boom2:play()
+                    elseif boom_sound_cycler == 3 then sounds.boom3:play()
+                    elseif boom_sound_cycler == 4 then sounds.boom4:play()
+                    elseif boom_sound_cycler == 5 then sounds.boom5:play()
+                    end
+                    boom_sound_cycler = boom_sound_cycler + 1
+                end
                 table.remove(things, i)
             end
         end
