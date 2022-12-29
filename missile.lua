@@ -20,7 +20,17 @@ function updateMissiles(dt)
 
     -- Remove Dead Missiles
     for i=#missiles, 1, -1 do
-        if missiles[i].dead then table.remove(missiles, i) end
+        if missiles[i].dead then 
+            table.remove(missiles, i) 
+            if boom_sound_cycler == 6 then boom_sound_cycler = 1 end
+            if boom_sound_cycler == 1 then sounds.boom1:play()
+            elseif boom_sound_cycler == 2 then sounds.boom2:play()
+            elseif boom_sound_cycler == 3 then sounds.boom3:play()
+            elseif boom_sound_cycler == 4 then sounds.boom4:play()
+            elseif boom_sound_cycler == 5 then sounds.boom5:play()
+            end
+            boom_sound_cycler = boom_sound_cycler + 1
+        end
     end
 end
 

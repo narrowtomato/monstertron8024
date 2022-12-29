@@ -193,9 +193,18 @@ function love.load()
     sounds.boom3 = love.audio.newSource("sounds/boom3.wav", "static")
     sounds.boom4 = love.audio.newSource("sounds/boom4.wav", "static")
     sounds.boom5 = love.audio.newSource("sounds/boom5.wav", "static")
+    sounds.death = love.audio.newSource("sounds/death.wav", "static")
+    sounds.spawn = love.audio.newSource("sounds/spawn.wav", "static")
+    sounds.rescue1 = love.audio.newSource("sounds/rescue1.wav", "static")
+    sounds.rescue2 = love.audio.newSource("sounds/rescue2.wav", "static")
+    sounds.rescue3 = love.audio.newSource("sounds/rescue3.wav", "static")
+    sounds.rescue4 = love.audio.newSource("sounds/rescue4.wav", "static")
+    sounds.rescue5 = love.audio.newSource("sounds/rescue5.wav", "static")
+    sounds.bonk = love.audio.newSource("sounds/bonk.wav", "static")
 
     -- Sound Cyclers
     boom_sound_cycler = 1
+    rescue_sound_cycler = 1
 end
 
 function love.update(dt)
@@ -510,6 +519,9 @@ function love.update(dt)
                     -- Enter Deathstate and set timer
                     gameState = DEATH
                     spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y)
+                    -- Play Sound
+                    sounds.death:play()
+                    -- Set death timer
                     player.death_timer = 2
                 end
             end
@@ -536,6 +548,8 @@ function love.update(dt)
                         -- Bump the Hulk in the direction the bullet was moving
                         t.x = t.x + (math.cos( b.direction ) * 5)
                         t.y = t.y + (math.sin( b.direction ) * 5)
+                        -- Play bonk sound
+                        sounds.bonk:play()
                     end
                 end
             end
@@ -584,6 +598,15 @@ function love.update(dt)
                     elseif boom_sound_cycler == 5 then sounds.boom5:play()
                     end
                     boom_sound_cycler = boom_sound_cycler + 1
+                else 
+                    if rescue_sound_cycler == 6 then rescue_sound_cycler = 1 end
+                    if rescue_sound_cycler == 1 then sounds.rescue1:play()
+                    elseif rescue_sound_cycler == 2 then sounds.rescue2:play()
+                    elseif rescue_sound_cycler == 3 then sounds.rescue3:play()
+                    elseif rescue_sound_cycler == 4 then sounds.rescue4:play()
+                    elseif rescue_sound_cycler == 5 then sounds.rescue5:play()
+                    end
+                    rescue_sound_cycler = rescue_sound_cycler + 1
                 end
                 table.remove(things, i)
             end
@@ -884,6 +907,9 @@ function nextWave(restart)
 
     -- Create reverse explosion for the player
     spawnSplodey({player.color[1], player.color[2], player.color[3]}, player.x, player.y, true)
+
+    -- Play Spawn Sound
+    sounds.spawn:play()
     
     -- Increment the wave if not restarting
     if not restart then 
