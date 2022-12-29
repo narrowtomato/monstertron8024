@@ -180,6 +180,14 @@ function love.load()
     print(joystick)
     left_stick_direction = "neutral"
     right_stick_direction = "neutral"
+
+    -- Sound Setup
+    sounds = {}
+    sounds.shoot1 = love.audio.newSource("sounds/shoot1.wav", "static")
+    sounds.shoot2 = love.audio.newSource("sounds/shoot2.wav", "static")
+    sounds.shoot3 = love.audio.newSource("sounds/shoot3.wav", "static")
+    sounds.shoot4 = love.audio.newSource("sounds/shoot4.wav", "static")
+    sounds.shoot5 = love.audio.newSource("sounds/shoot5.wav", "static")
 end
 
 function love.update(dt)
@@ -229,7 +237,6 @@ function love.update(dt)
             right_stick_direction = "left"
         end
     end
-    print(right_stick_direction)
 
     -- Update animations
     skel_animation:update(dt)

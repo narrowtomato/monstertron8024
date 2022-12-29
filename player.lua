@@ -17,19 +17,19 @@ player.quad = love.graphics.newQuad(0, 0, 32, 32, player.image)
 function player:update(dt)
     if gameState == 2 then
         -- Player Movement
-        if (love.keyboard.isDown("d") or joystick:isGamepadDown("dpright") or left_stick_direction == "right" or left_stick_direction == "down_right" or left_stick_direction == "up_right") and self.x < gameWidth - 5 then
+        if (love.keyboard.isDown("d") or (joystick and joystick:isGamepadDown("dpright")) or left_stick_direction == "right" or left_stick_direction == "down_right" or left_stick_direction == "up_right") and self.x < gameWidth - 5 then
             self.x = self.x + self.speed * dt
             player.quad = love.graphics.newQuad(96, 0, 32, 32, player.image)
         end
-        if (love.keyboard.isDown("a") or joystick:isGamepadDown("dpleft") or left_stick_direction == "left" or left_stick_direction == "down_left" or left_stick_direction == "up_left") and self.x > 5 then
+        if (love.keyboard.isDown("a") or (joystick and joystick:isGamepadDown("dpleft")) or left_stick_direction == "left" or left_stick_direction == "down_left" or left_stick_direction == "up_left") and self.x > 5 then
             self.x = self.x - self.speed * dt
             player.quad = love.graphics.newQuad(64, 0, 32, 32, player.image)
         end
-        if (love.keyboard.isDown("w") or joystick:isGamepadDown("dpup") or left_stick_direction == "up" or left_stick_direction == "up_left" or left_stick_direction == "up_right") and self.y > 5 then
+        if (love.keyboard.isDown("w") or (joystick and joystick:isGamepadDown("dpup")) or left_stick_direction == "up" or left_stick_direction == "up_left" or left_stick_direction == "up_right") and self.y > 5 then
             self.y = self.y - self.speed * dt
             player.quad = love.graphics.newQuad(32, 0, 32, 32, player.image)
         end
-        if (love.keyboard.isDown("s") or joystick:isGamepadDown("dpdown") or left_stick_direction == "down" or left_stick_direction == "down_left" or left_stick_direction == "down_right") and self.y < gameHeight - 5 then
+        if (love.keyboard.isDown("s") or (joystick and joystick:isGamepadDown("dpdown")) or left_stick_direction == "down" or left_stick_direction == "down_left" or left_stick_direction == "down_right") and self.y < gameHeight - 5 then
             self.y = self.y + self.speed * dt
             player.quad = love.graphics.newQuad(0, 0, 32, 32, player.image)
         end

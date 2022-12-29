@@ -2,6 +2,7 @@ bullets = {}
 bullet_timer = 0
 bullet_timer_max = 0.15
 BULLET_SPEED = 500
+bullet_sound_cycler = 1
 
 function updateBullets(dt)
     -- Player Shooting 
@@ -9,6 +10,14 @@ function updateBullets(dt)
         -- Spawn bullet on timer to repeat firing
         if bullet_timer <= 0 then
             spawnBullet()
+            if bullet_sound_cycler == 6 then bullet_sound_cycler = 1 end
+            if bullet_sound_cycler == 1 then sounds.shoot1:play()
+            elseif bullet_sound_cycler == 2 then sounds.shoot2:play()
+            elseif bullet_sound_cycler == 3 then sounds.shoot3:play()
+            elseif bullet_sound_cycler == 4 then sounds.shoot4:play()
+            elseif bullet_sound_cycler == 5 then sounds.shoot5:play()
+            end
+            bullet_sound_cycler = bullet_sound_cycler + 1
             bullet_timer = bullet_timer_max
         end
     end
