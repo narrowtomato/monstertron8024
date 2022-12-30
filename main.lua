@@ -936,8 +936,7 @@ function nextWave(restart)
         if current_wave % total_waves == 0 then 
             populateStage(0, 1, 20)
         elseif current_wave % total_waves == 1 then
-            populateStage(10, 10, 10, 3, 3, 5, 3)
-            -- populateStage(10, 30, 5)
+            populateStage(10, 30, 5)
         elseif current_wave % total_waves == 2 then
             populateStage(10, 20, 7, 5, 1)
         elseif current_wave % total_waves == 3 then
